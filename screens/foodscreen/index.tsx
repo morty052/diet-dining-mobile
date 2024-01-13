@@ -1,11 +1,63 @@
 import { View, Text, Pressable, Image } from "react-native";
-import { Screen } from "../../components";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import dessert from "../../assets/test.png";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useCartContext } from "../../hooks/useCartContext";
+import desserts from "../../assets/desserts.png";
 
 type Props = {};
+
+const menu = [
+  {
+    name: "Deserts",
+    image: desserts,
+    price: 200,
+    _id: "1",
+  },
+  {
+    name: "Lean meat",
+    image: desserts,
+    price: 200,
+    _id: "2",
+  },
+  {
+    name: "Salads",
+    image: desserts,
+    price: 200,
+    _id: "3",
+  },
+  {
+    name: "Diet foods",
+    image: desserts,
+    price: 200,
+    _id: "4",
+  },
+  {
+    name: "Smoothies",
+    image: desserts,
+    price: 200,
+    _id: "5",
+  },
+  {
+    name: "Soups",
+    image: desserts,
+    price: 200,
+    _id: "6",
+  },
+  {
+    name: "Specials",
+    image: desserts,
+    price: 200,
+    _id: "7",
+  },
+  {
+    name: "Parfaits",
+    image: desserts,
+    price: 200,
+    _id: "8",
+  },
+];
 const BackButtonheader = ({ setNutritionalValue }) => {
   const navigation = useNavigation();
   return (
@@ -29,38 +81,75 @@ const BackButtonheader = ({ setNutritionalValue }) => {
   );
 };
 
-const BuyButton = () => {
+const BuyButton = ({ buyItem }: { buyItem: () => void }) => {
   return (
-    <View className="absolute bottom-0 left-0 right-0 pb-10 pt-6 border-gray-300 px-4 border-t">
-      <Pressable className=" inline-flex border py-4 rounded-lg bg-dark px-4 justify-center items-center">
+    <View className="absolute bottom-0 left-0 right-0 pb-10 pt-6 border-gray-300 px-4 border-t space-y-6">
+      <View className="flex-row justify-between items-center">
+        <Text className="text-lg">Rate Meal</Text>
+        <View className="flex-row space-x-2">
+          <FontAwesome name="star" size={20} color="gold" />
+          <FontAwesome name="star" size={20} color="gold" />
+          <FontAwesome name="star" size={20} color="gold" />
+          <FontAwesome name="star" size={20} color="gold" />
+          <FontAwesome name="star" size={20} color="gold" />
+        </View>
+      </View>
+      <Pressable
+        onPress={buyItem}
+        className=" inline-flex border py-4 rounded-lg bg-dark px-4 justify-center items-center"
+      >
         <Text className=" text-white text-xl font-medium">Add to Cart</Text>
       </Pressable>
     </View>
   );
 };
 
-const ServingsDisplay = () => {
+const ServingsDisplay = ({
+  setItemQuantity,
+  itemQuantity,
+}: {
+  setItemQuantity: any;
+  itemQuantity: number;
+}) => {
   return (
     <View className="py-6">
       <Text className="text-2xl font-semibold text-dark">Servings</Text>
       <View className="flex-row items-center space-x-4 pt-4">
-        <FontAwesome size={30} name="minus-circle" />
-        <Text className="text-lg text-dark">1</Text>
-        <FontAwesome size={30} name="plus-circle" />
+        <FontAwesome
+          onPress={() => setItemQuantity((prev: number) => prev - 1)}
+          size={30}
+          name="minus-circle"
+        />
+        <Text className="text-lg text-dark">{itemQuantity}</Text>
+        <FontAwesome
+          onPress={() => setItemQuantity((prev: number) => prev + 1)}
+          size={30}
+          name="plus-circle"
+        />
       </View>
     </View>
   );
 };
 
-const ItemInfo = () => {
+const ItemInfo = ({
+  price,
+  name,
+  image,
+}: {
+  price: number;
+  name: string;
+  image: any;
+}) => {
   return (
     <>
-      <Image className="w-72 h-72 mx-auto" source={dessert} />
-      <Text className="text-2xl font-bold text-dark">
-        Hamburger McLovin extra
-      </Text>
+      <Image
+        resizeMode="contain"
+        className="w-full h-72 mx-auto"
+        source={{ uri: image }}
+      />
+      <Text className="text-2xl font-bold text-dark">{name}</Text>
       <Text className="text-xl text-dark">510 Cal.</Text>
-      <Text className="text-2xl font-semibold text-dark">$5.69</Text>
+      <Text className="text-2xl font-semibold text-dark">${price}</Text>
     </>
   );
 };
@@ -138,18 +227,38 @@ const NutritionalValue = ({ setNutritionalValue }) => {
   );
 };
 
-export const FoodScreen = (props: Props) => {
+export const FoodScreen = ({ navigation, route }) => {
   const [viewingNutritionalValue, setViewingNutritionalValue] = useState();
+  const [itemQuantity, setItemQuantity] = useState(1);
+  const { addToCart } = useCartContext();
+  const { _id } = route.params;
+  const activeItem = useMemo(() => {
+    const item = menu.find((item) => item._id == _id);
+    return item;
+  }, [_id]);
+  const { price, name, image } = activeItem ?? {};
+  console.info(activeItem);
   return (
     <>
       {!viewingNutritionalValue ? (
         <View className="pt-12 flex h-screen relative">
           <BackButtonheader setNutritionalValue={setViewingNutritionalValue} />
           <View className="px-4 flex-1  pt-12">
-            <ItemInfo />
-            <ServingsDisplay />
+            <ItemInfo
+              image={
+                "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
+              }
+              name={name}
+              price={price}
+            />
+            <ServingsDisplay
+              itemQuantity={itemQuantity}
+              setItemQuantity={setItemQuantity}
+            />
           </View>
-          <BuyButton />
+          <BuyButton
+            buyItem={() => addToCart({ ...activeItem, quantity: itemQuantity })}
+          />
         </View>
       ) : (
         <NutritionalValue setNutritionalValue={setViewingNutritionalValue} />

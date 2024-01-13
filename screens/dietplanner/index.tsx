@@ -1,4 +1,12 @@
-import { View, Text, ImageBackground, FlatList, Image } from "react-native";
+import {
+  View,
+  Text,
+  ImageBackground,
+  FlatList,
+  Image,
+  Pressable,
+  useWindowDimensions,
+} from "react-native";
 import React from "react";
 import { Screen, Button } from "../../components";
 import circle from "../../assets/circle.png";
@@ -7,6 +15,7 @@ import { StatusBar } from "expo-status-bar";
 import { Feather } from "@expo/vector-icons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import QuizRoutes from "./QuizRoutes";
+import { useState, useMemo } from "react";
 
 type DietStackParamList = {
   DietHome: undefined;
@@ -56,7 +65,7 @@ const menu = [
 
 function DishPreviewCard({ title, image }: { title: string; image: string }) {
   return (
-    <View className="flex-1  mr-4 w-[80vw]">
+    <View className="flex-1  mr-4 w-[90vw]">
       <View className="relative">
         <Image
           source={{ uri: image }}
@@ -73,7 +82,7 @@ function DishPreviewCard({ title, image }: { title: string; image: string }) {
           <Text className="text-lg">$15.00</Text>
         </View>
         <View className=" border px-4 w-28 inline-flex items-center py-1 rounded-3xl border-dark">
-          <Text className="text-sm font-medium">4.7</Text>
+          <Text className="text-sm font-medium">Order</Text>
         </View>
       </View>
     </View>
@@ -95,6 +104,51 @@ const Circle = ({ onPress }: { onPress: () => void }) => {
         </View>
       </View>
     </ImageBackground>
+  );
+};
+
+const Tabs = ({
+  activeTab,
+  setActiveTab,
+}: {
+  activeTab: string;
+  setActiveTab: (s: string) => void;
+}) => {
+  return (
+    <View className="flex-row justify-between border-y border-gray-300 ">
+      <Pressable
+        onPress={() => setActiveTab("TODAY")}
+        className={` flex-1 inline-flex items-center py-1 rounded ${
+          activeTab == "TODAY"
+            ? " text-primary border border-gray-300"
+            : "text-dark"
+        }`}
+      >
+        <Text
+          className={`text-lg font-medium  ${
+            activeTab == "TODAY" ? " text-primary" : "text-dark"
+          }`}
+        >
+          Today
+        </Text>
+      </Pressable>
+      <Pressable
+        onPress={() => setActiveTab("TRACKER")}
+        className={` flex-1 inline-flex items-center py-1 rounded ${
+          activeTab == "TRACKER"
+            ? " text-primary border border-gray-300"
+            : "text-dark"
+        }`}
+      >
+        <Text
+          className={`text-lg font-medium  ${
+            activeTab == "TRACKER" ? " text-primary" : "text-dark"
+          }`}
+        >
+          Tracker
+        </Text>
+      </Pressable>
+    </View>
   );
 };
 
@@ -139,32 +193,140 @@ const DietHomePage = ({ navigation }: { navigation: any }) => {
   );
 };
 
+const Planner = () => {
+  const { width, height } = useWindowDimensions();
+
+  const half = height / 2.5;
+
+  const TrackerVisual = () => {
+    return (
+      <View style={{ height: half }} className="bg-dark relative">
+        <View className="flex flex-row justify-center items-center space-x-8 py-6">
+          <View className="flex items-center">
+            <Text className="text-lg font-bold text-white">0</Text>
+            <Text className="text-lg font-bold text-white">Eaten</Text>
+          </View>
+          <View className=" w-52 h-52 rounded-full border-[8px] flex items-center justify-center border-gray-300/10">
+            <Text className="text-5xl text-white font-bold">2540</Text>
+            <Text className="text-white">KCAL LEFT</Text>
+          </View>
+          <View className="flex items-center">
+            <Text className="text-lg font-bold text-white">0</Text>
+            <Text className="text-lg font-bold text-white">Goal</Text>
+          </View>
+        </View>
+        <Text className="text-center text-lg text-white">Hide stats</Text>
+        <View className="absolute -bottom-8 left-0 z-10 right-0 px-6">
+          <View className="bg-white rounded-lg p-4  flex-row justify-between w-full">
+            <View className="flex items-center space-y-2">
+              <Text className="">Carbs</Text>
+              <Text>0/318g</Text>
+            </View>
+            <View className="flex items-center space-y-2">
+              <Text className="">Protein</Text>
+              <Text>0/127g</Text>
+            </View>
+            <View className="flex items-center space-y-2">
+              <Text className="">Fat</Text>
+              <Text>0/85g</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  const DaySwitcher = () => {
+    return (
+      <View className=" flex-row items-center pt-12 px-4  w-full">
+        <Feather name="chevron-left" size={20} />
+        <View className="flex-1 flex-row justify-center  items-center space-x-2">
+          <Feather name="calendar" size={20} />
+          <Text className="text-lg">Today, JUL 27</Text>
+        </View>
+        <Feather name="chevron-right" size={20} />
+      </View>
+    );
+  };
+
+  const RecommendedMealCard = ({ time }: { time: string }) => {
+    return (
+      <View className="bg-white my-2 border p-4 flex-row justify-between items-center rounded-lg">
+        <Image className=" h-16 w-16" source={desserts} />
+        <View className="flex-1 px-4">
+          <Text className="text-xl font-medium test-dark">{time}</Text>
+          <Text>recommended: 635-889 kcal</Text>
+        </View>
+        <Feather name="plus-circle" size={30} />
+      </View>
+    );
+  };
+
+  const RecommendedMealsGrid = () => {
+    return (
+      <View className="p-4 ">
+        <RecommendedMealCard time="Breakfast" />
+        <RecommendedMealCard time="Lunch" />
+        <RecommendedMealCard time="Dinner" />
+      </View>
+    );
+  };
+
+  return (
+    <View className="h-screen">
+      <TrackerVisual />
+      <DaySwitcher />
+      <RecommendedMealsGrid />
+    </View>
+  );
+};
+
 const DailyDiet = ({ navigation }: { navigation: any }) => {
+  const [activeTab, setactiveTab] = useState<"TODAY" | "TRACKER">("TODAY");
+
+  const isViewingToday = useMemo(() => {
+    if (activeTab == "TODAY") {
+      return true;
+    }
+  }, [activeTab]);
+
   return (
     <>
       <Screen style="relative -mx-4 ">
-        <View className=" border-b border-gray-300 pb-2.5 w-full space-y-2 ">
-          <Text className="text-center">Thursday, JUL 27</Text>
-          <Text className="text-center text-2xl text-dark font-medium">
-            Day 1 of 7
-          </Text>
-        </View>
-        <View className="py-10 space-y-6 px-2">
-          <Text className="text-3xl text-dark font-medium">Breakfast</Text>
-          <FlatList
-            horizontal
-            data={menu}
-            renderItem={({ item }) => (
-              <DishPreviewCard
-                image={
-                  "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
-                }
-                title={item.name}
+        <Tabs activeTab={activeTab} setActiveTab={setactiveTab} />
+        {isViewingToday ? (
+          <>
+            <View className=" border-b border-gray-300 py-2.5 w-full space-y-2 ">
+              <Text className="text-center text-lg">Thursday, JUL 27</Text>
+              <Text className="text-center text-2xl text-dark font-medium">
+                Day 1 of 7
+              </Text>
+            </View>
+            <View className="py-10 space-y-2 px-2">
+              <View className="flex-row justify-between items-center py-2 ">
+                <Text className="text-3xl text-dark font-medium">
+                  Breakfast
+                </Text>
+                <View className="border-dark bg-primary rounded-3xl px-4 py-2">
+                  <Text className="text-xs text-dark font-medium">
+                    Pending Order
+                  </Text>
+                </View>
+              </View>
+              <FlatList
+                horizontal
+                data={menu}
+                renderItem={({ item }) => (
+                  <DishPreviewCard
+                    image={
+                      "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
+                    }
+                    title={item.name}
+                  />
+                )}
+                keyExtractor={(item) => item.name}
               />
-            )}
-            keyExtractor={(item) => item.name}
-          />
-          <Text className="text-3xl text-dark font-medium">Lunch</Text>
+              {/* <Text className="text-3xl text-dark font-medium">Lunch</Text>
           <FlatList
             horizontal
             data={menu}
@@ -191,10 +353,13 @@ const DailyDiet = ({ navigation }: { navigation: any }) => {
               />
             )}
             keyExtractor={(item) => item.name}
-          />
-        </View>
+          /> */}
+            </View>
+          </>
+        ) : (
+          <Planner />
+        )}
       </Screen>
-      <StatusBar backgroundColor="#90c466" style="light" />
     </>
   );
 };

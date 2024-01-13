@@ -5,3 +5,4 @@ export * from "./orderspage";
 export * from "./cart";
 export * from "./account";
 export * from "./foodscreen";
+export * from "./onboardingscreen";
