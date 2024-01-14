@@ -7,7 +7,7 @@ import {
   Pressable,
 } from "react-native";
 import { SearchBar, Screen, Header } from "../../components";
-import desserts from "../../assets/desserts.png";
+import { desserts } from "../../assets";
 import { Feather } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
@@ -75,7 +75,7 @@ const menu = [
 ];
 const categories = [
   {
-    name: "Deserts",
+    name: "Desserts",
     image: desserts,
   },
   {
@@ -86,10 +86,10 @@ const categories = [
     name: "Salads",
     image: salads,
   },
-  {
-    name: "Diet foods",
-    image: desserts,
-  },
+  // {
+  //   name: "Diet foods",
+  //   image: desserts,
+  // },
   {
     name: "Smoothies",
     image: smoothie,
@@ -119,7 +119,7 @@ function MenuItem({ image, title }: any) {
   return (
     <View className=" inline-flex  mr-8    items-center">
       {/* <SvgComponent /> */}
-      <Image className="w-20 h-20" source={image} />
+      <Image resizeMode="cover" className="w-28 h-28" source={image} />
       <Text className="text-sm font-bold text-dark">{title}</Text>
     </View>
   );
@@ -246,7 +246,6 @@ const HomeMenu = () => {
           keyExtractor={(item) => item.name}
         />
       </View>
-      <StatusBar style="auto" backgroundColor="#fff" />
     </Screen>
   );
 };
@@ -254,10 +253,10 @@ const HomeMenu = () => {
 export const Home = ({ navigation }: { navigation: any }) => {
   return (
     <>
-      <Stack.Navigator screenOptions={{ headerShown: false }} children>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="HomeMenu" component={HomeMenu} />
       </Stack.Navigator>
-      <StatusBar style="auto" backgroundColor="#fff" />
+      <StatusBar hidden={false} backgroundColor="#E5E7EB" />
     </>
   );
 };

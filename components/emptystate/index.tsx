@@ -14,7 +14,7 @@ export const EmptyState = (props: Props) => {
   const { width } = useWindowDimensions();
 
   return (
-    <View className="pt-12">
+    <View className="pt-12  flex ">
       <LottieView
         style={{ height: width * 0.9, width: width * 0.9 }}
         autoPlay
@@ -28,7 +28,6 @@ export const EmptyState = (props: Props) => {
           {secondaryText}
         </Text>
       )}
-      <StatusBar />
     </View>
   );
 };

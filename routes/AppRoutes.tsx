@@ -1,5 +1,12 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Cart, Home, DietPlanner, OrdersPage, FoodScreen } from "../screens";
+import {
+  Cart,
+  Home,
+  DietPlanner,
+  OrdersPage,
+  FoodScreen,
+  LocationScreen,
+} from "../screens";
 import OnboardingRoutes from "./OnboardingRoutes";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 // import DietPlanner from "../screens/dietplanner";
@@ -16,7 +23,7 @@ const Tab = createBottomTabNavigator<RootTabsParamList>();
 
 function AppTabsNavigator() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }} children>
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen
         name="Home"
         options={{
@@ -60,16 +67,18 @@ type RootStackParamList = {
   App: undefined;
   OnBoarding: undefined;
   FoodScreen: undefined;
+  LocationScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppStack = () => {
   return (
-    <Stack.Navigator children screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="OnBoarding" component={OnboardingRoutes} />
       <Stack.Screen name="App" component={AppTabsNavigator} />
       <Stack.Screen name="FoodScreen" component={FoodScreen} />
+      <Stack.Screen name="LocationScreen" component={LocationScreen} />
     </Stack.Navigator>
   );
 };

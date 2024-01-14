@@ -1,6 +1,7 @@
-import { View, Text } from "react-native";
-import React from "react";
+import { View, Text, StyleSheet, Platform } from "react-native";
+import React, { useState, useEffect } from "react";
 import { EmptyState } from "../../components";
+import MapView from "react-native-maps";
 
 type Props = {};
 
