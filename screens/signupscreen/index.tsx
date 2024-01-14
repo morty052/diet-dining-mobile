@@ -1,4 +1,11 @@
-import { View, Text, TextInput, Image, Keyboard } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Image,
+  Keyboard,
+  ImageBackground,
+} from "react-native";
 import React from "react";
 import { Button } from "../../components";
 import { googleLogo } from "../../assets";
@@ -7,6 +14,9 @@ import { useSignUp } from "@clerk/clerk-expo";
 import { Feather } from "@expo/vector-icons";
 import { KeyboardAvoidingView } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Animated, { SlideInDown } from "react-native-reanimated";
+import Foodbg from "../../assets/foodbg.png";
+import emailImage from "../../assets/emailimage.png";
 
 const Stack = createNativeStackNavigator();
 
@@ -24,8 +34,11 @@ const SignUpForm = ({
   const navigation = useNavigation();
 
   return (
-    <View className=" absolute bottom-0 h-3/5 left-0 right-0">
-      <View className="flex bg-white flex-1  rounded-t-2xl p-4">
+    <Animated.View
+      entering={SlideInDown.duration(900)}
+      className=" absolute bottom-0 h-[50%] left-0 right-0 z-10"
+    >
+      <Animated.View className="flex bg-white flex-1  rounded-t-2xl pt-4 px-4">
         <Text className="text-center text-lg font-medium text-dark">
           Welcome
         </Text>
@@ -44,7 +57,7 @@ const SignUpForm = ({
             textStyle="text-white"
             // onPress={() => navigation.navigate("App")}
             onPress={handlePress}
-            style="bg-dark w-full text-white mt-6"
+            style="bg-dark w-full text-white mt-4"
             title="Sign Up"
           />
         </View>
@@ -66,7 +79,7 @@ const SignUpForm = ({
         </View>
 
         {/* TERMS */}
-        <View className=" mt-6">
+        <View className=" mt-3">
           <Text className="text-center text-sm text-gray-500">
             By continuing, you agree to our Terms of Service
           </Text>
@@ -74,8 +87,8 @@ const SignUpForm = ({
             Privacy Policy and cookie policy
           </Text>
         </View>
-      </View>
-    </View>
+      </Animated.View>
+    </Animated.View>
   );
 };
 
@@ -98,6 +111,8 @@ const MainSignUpScreen = () => {
 
   const { isLoaded, signUp, setActive } = useSignUp();
 
+  const navigation = useNavigation();
+
   const onSignUpPress = async () => {
     if (!isLoaded) {
       return;
@@ -112,29 +127,39 @@ const MainSignUpScreen = () => {
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 
       // change the UI to our pending section.
-      setPendingVerification(true);
+      // setPendingVerification(true);
 
-      // navigation.navigate("EmailVerificationScreen");
+      navigation.navigate("EmailVerificationScreen");
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
     }
   };
 
-
-
   return (
-    <View className="flex flex-1 h-screen pt-12 px-4 bg-primary relative">
-      <Text>Diet-dining</Text>
+    <ImageBackground
+      resizeMode="cover"
+      source={Foodbg}
+      className="flex flex-1 h-screen pt-12 px-4  relative"
+    >
+      <View className="absolute bottom-0 top-0 left-0 right-0 bg-black/40"></View>
       <SignUpForm
         handlePress={onSignUpPress}
         emailAddress={emailAddress}
         setEmailAddress={setEmailAddress}
       />
-    </View>
+    </ImageBackground>
   );
 };
 
-const OTPInput = ({ onPressVerify, code, setCode }) => {
+const OTPInput = ({
+  onPressVerify,
+  code,
+  setCode,
+}: {
+  onPressVerify: (code: string) => void;
+  code: string;
+  setCode: any;
+}) => {
   const codeInputOneRef = React.useRef<TextInput>(null);
   const codeInputTwoRef = React.useRef<TextInput>(null);
   const codeInputThreeRef = React.useRef<TextInput>(null);
@@ -146,12 +171,12 @@ const OTPInput = ({ onPressVerify, code, setCode }) => {
 
   const onchange = (text: string, ref: any, index: number) => {
     if (index === code_length) {
-      setCode(text);
+      setCode((prev: string) => prev + text);
       onPressVerify(code + text);
       return;
     }
     if (text !== "") {
-      setCode((prev) => prev + text);
+      setCode((prev: string) => prev + text);
       ref.current?.focus();
     }
   };
@@ -221,26 +246,36 @@ const OTPInput = ({ onPressVerify, code, setCode }) => {
   );
 };
 
-const EmailVerificationScreen = ({
-  code,
-  setCode,
-  onVerifyPress,
-}: {
-  code: string;
-  setCode: (code: string) => void;
-  onVerifyPress: (code: number) => void;
-}) => {
+const EmailVerificationScreen = () => {
+  const [code, setCode] = React.useState<string>("");
+
+  const { isLoaded, signUp, setActive } = useSignUp();
+
+  const navigation = useNavigation();
+
+  const onPressVerify = async (code) => {
+    if (!isLoaded) {
+      return;
+    }
+
+    try {
+      console.log("code", code);
+      const completeSignUp = await signUp.attemptEmailAddressVerification({
+        code,
+      });
+
+      // await setActive({ session: completeSignUp.createdSessionId });
+      console.info("completeSignUp", completeSignUp);
+      navigation.navigate("App");
+    } catch (err: any) {
+      console.error(JSON.stringify(err, null, 2));
+    }
+  };
   return (
     <View className="flex bg-white flex-1 h-screen pt-12   relative">
       <Header />
-      <View className="pt-6 px-4">
-        <Image
-          resizeMode="center"
-          className="h-40 w-40"
-          source={{
-            uri: "https://img.freepik.com/free-vector/mail-concept-illustration_114360-396.jpg?w=740&t=st=1705198691~exp=1705199291~hmac=1e3b9a86f7e3e46599a2bbd9c72eb155e1ee8c135d8fdeecac9805e4096141b7",
-          }}
-        />
+      <View className="pt-4 px-4">
+        <Image resizeMode="contain" className="h-40 w-40" source={emailImage} />
         <Text className="text-2xl text-dark font-medium">
           Lets verify your email
         </Text>
@@ -248,21 +283,13 @@ const EmailVerificationScreen = ({
           We sent a code to your email please enter it below to continue
         </Text>
       </View>
-      <KeyboardAvoidingView behavior="padding" enabled>
-        <View className="p-4">
-          {/* <TextInput
-          value={code}
-          onChangeText={setCode}
-          className="border border-gray-400 text-center rounded-lg p-2"
-        /> */}
-          <OTPInput
-            code={code}
-            setCode={setCode}
-            onPressVerify={(code: number) => onVerifyPress(code)}
-          />
-        </View>
-        {/* <Button title="Continue" onPress={onVerifyPress} /> */}
-      </KeyboardAvoidingView>
+      <View className="p-4">
+        <OTPInput
+          code={code as string}
+          setCode={setCode}
+          onPressVerify={(code: string) => onPressVerify(code)}
+        />
+      </View>
     </View>
   );
 };
@@ -272,8 +299,6 @@ export const SignUpScreen = (props: Props) => {
   const [emailAddress, setEmailAddress] = React.useState("");
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
-
-  const navigation = useNavigation();
 
   const onSignUpPress = async () => {
     if (!isLoaded) {
@@ -317,44 +342,24 @@ export const SignUpScreen = (props: Props) => {
   };
 
   return (
-    <>
-      {!pendingVerification ? (
-        <MainSignUpScreen
-          emailAddress={emailAddress}
-          setEmailAddress={setEmailAddress}
-          onSignUpPress={onSignUpPress}
-        />
-      ) : (
-        <EmailVerificationScreen
-          onVerifyPress={(code) => onPressVerify(code)}
-          code={code}
-          setCode={setCode}
-        />
-      )}
-    </>
-    // <Stack.Navigator>
-    //   <Stack.Screen
-    //     name="MainSignUpScreen"
-    //     component={() => (
-    //       <MainSignUpScreen
-    //         emailAddress={emailAddress}
-    //         setEmailAddress={setEmailAddress}
-    //         onSignUpPress={onSignUpPress}
-    //       />
-    //     )}
-    //     options={{ headerShown: false }}
-    //   />
-    //   <Stack.Screen
-    //     name="EmailVerificationScreen"
-    //     component={() => (
-    //       <EmailVerificationScreen
-    //         onVerifyPress={(code) => onPressVerify(code)}
-    //         code={code}
-    //         setCode={setCode}
-    //       />
-    //     )}
-    //     options={{ headerShown: false }}
-    //   />
-    // </Stack.Navigator>
+    // <>
+    //   {!pendingVerification ? (
+    //     <MainSignUpScreen />
+    //   ) : (
+    //     <EmailVerificationScreen />
+    //   )}
+    // </>
+    <Stack.Navigator initialRouteName="MainSignUpScreen">
+      <Stack.Screen
+        name="MainSignUpScreen"
+        component={MainSignUpScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EmailVerificationScreen"
+        component={EmailVerificationScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
   );
 };

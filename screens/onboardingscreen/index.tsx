@@ -1,15 +1,29 @@
 import { View, Text, Pressable, useWindowDimensions } from "react-native";
 import { useState, useMemo } from "react";
 import LottieView from "lottie-react-native";
-import { ghost, healthyFoodLottie } from "../../assets";
+import {
+  ghost,
+  healthyFoodLottie,
+  rateFoodLottie,
+  saladLottie,
+} from "../../assets";
 import { useNavigation } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+  Easing,
+} from "react-native-reanimated";
 
 type TOnboardingScreenProps = {
   description: string;
   title: string;
   lottie: any;
   color: string;
+  width: number;
+  height: number;
+  textColor?: string;
 };
 
 const OnboardingControls = ({
@@ -68,7 +82,9 @@ const OnboardingControls = ({
   return (
     <View className="bg-black/30 absolute bottom-0  p-6 px-4 left-0 right-0 ">
       <View className="flex-row justify-between items-center">
-        <Text className="text-white">Skip</Text>
+        <Pressable onPress={() => navigate.navigate("SignUp")}>
+          <Text className="text-white">Skip</Text>
+        </Pressable>
         <PageCountVisuals />
         <Pressable
           onPress={
@@ -83,34 +99,54 @@ const OnboardingControls = ({
 };
 
 export const OnboardingScreenItem = (props: TOnboardingScreenProps) => {
-  const { description, title, lottie, color } = props;
-  const { width, height } = useWindowDimensions();
+  const { description, title, lottie, color, width, height, textColor } = props;
+
+  const randomWidth = useSharedValue(10);
+
+  const config = {
+    duration: 900,
+  };
+
+  const style = useAnimatedStyle(() => {
+    return {
+      backgroundColor: withTiming(color, config),
+    };
+  });
+
   return (
     <>
-      <View
-        style={{
-          backgroundColor: color,
-          display: "flex",
-          alignItems: "center",
-          position: "relative",
-          paddingTop: 100,
-          height: "100%",
-        }}
+      <Animated.View
+        style={[
+          {
+            display: "flex",
+            alignItems: "center",
+            position: "relative",
+            paddingTop: 100,
+            height: "100%",
+          },
+          style,
+        ]}
       >
         <LottieView
-          style={{ width: width * 0.7, height: width * 0.7 }}
+          style={{ width: width * 0.9, height: width }}
           autoPlay
-          source={healthyFoodLottie}
+          source={lottie}
         />
-        <View className="absolute bottom-40 pb-14">
-          <Text className="text-3xl font-semibold text-white text-center">
+        <View className="absolute bottom-32 pb-14 px-4  space-y-2">
+          <Animated.Text
+            style={{ color: textColor ? textColor : "white" }}
+            className="text-3xl font-semibold text-white text-center"
+          >
             {title}
-          </Text>
-          <Text className="text-lg font-semibold text-white text-center">
+          </Animated.Text>
+          <Animated.Text
+            style={{ color: textColor ? textColor : "white" }}
+            className="text-lg font-semibold text-white text-center"
+          >
             {description}
-          </Text>
+          </Animated.Text>
         </View>
-      </View>
+      </Animated.View>
     </>
   );
 };
@@ -118,38 +154,38 @@ export const OnboardingScreenItem = (props: TOnboardingScreenProps) => {
 export const OnboardingScreen = () => {
   const [onboardingIndex, setonboardingIndex] = useState(0);
   const [color, setColor] = useState("#60A5FA");
+  const { width, height } = useWindowDimensions();
 
   const onboardingPages = {
     0: (
       <OnboardingScreenItem
-        lottie={""}
+        width={width * 0.8}
+        height={width}
+        lottie={healthyFoodLottie}
         description="Get set up with a fully tracked diet plan in a few clicks"
         title="Professional Diet Plans"
-        color="#60A5FA"
+        color="#C084FC"
       />
     ),
     1: (
       <OnboardingScreenItem
-        lottie={""}
-        description=""
-        title="Eat Healthy"
+        width={width}
+        height={height}
+        lottie={rateFoodLottie}
+        description="Get new meal suggestions  based on your previous ratings"
+        title="Food Rating system"
         color="#EEE3C8"
+        textColor="#1D3557"
       />
     ),
     2: (
       <OnboardingScreenItem
-        lottie={""}
-        description=""
-        title=""
+        width={width}
+        height={height}
+        lottie={saladLottie}
+        description="Get healthy diet meals delivered to your door without the hassle"
+        title="Hassle free Diet dining"
         color="#80A5FA"
-      />
-    ),
-    3: (
-      <OnboardingScreenItem
-        lottie={""}
-        description=""
-        title=""
-        color="#60A5FA"
       />
     ),
   };
