@@ -1,7 +1,7 @@
 // @ts-ignore
 import { createContext, ReactNode, useState } from "react";
 
-type TcartItem = {
+export type TcartItem = {
   price: number;
   name: string;
   _id: string;
@@ -13,7 +13,7 @@ export type TCartContextType = {
   open: boolean;
   addToCart: (item: TcartItem) => void;
   cartItems: TcartItem[];
-  getCartTotal: () => void;
+  getCartTotal: () => number;
   decreaseItemQuantity: (_id: string) => void;
   increaseItemQuantity: (_id: string) => void;
   removeItemFromCart: (_id: string) => void;
@@ -88,7 +88,7 @@ const CartContextProvider = ({ children }: { children?: ReactNode }) => {
       return item;
     });
 
-    const updatedItem: TcartItem = updatedCartItems.find(
+    const updatedItem: TcartItem | undefined = updatedCartItems.find(
       (item: TcartItem) => item._id == _id
     );
     const { quantity } = updatedItem;

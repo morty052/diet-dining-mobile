@@ -1,4 +1,4 @@
-import { View, Text, Pressable, useWindowDimensions } from "react-native";
+import { View, Pressable, useWindowDimensions, Text } from "react-native";
 import { useState, useMemo } from "react";
 import LottieView from "lottie-react-native";
 import {
@@ -88,7 +88,7 @@ const OnboardingControls = ({
         <PageCountVisuals />
         <Pressable
           onPress={
-            isLastItem ? () => navigate.navigate("SignUp") : () => handleNext()
+            isLastItem ? () => navigate.navigate("App") : () => handleNext()
           }
         >
           <Text className="text-white">{isLastItem ? "Done" : "Next"}</Text>

@@ -5,59 +5,61 @@ import dessert from "../../assets/test.png";
 import { useState, useMemo } from "react";
 import { useCartContext } from "../../hooks/useCartContext";
 import desserts from "../../assets/desserts.png";
+import { menu } from "../../constants/menu";
+import { StatusBar } from "expo-status-bar";
 
 type Props = {};
 
-const menu = [
-  {
-    name: "Deserts",
-    image: desserts,
-    price: 200,
-    _id: "1",
-  },
-  {
-    name: "Lean meat",
-    image: desserts,
-    price: 200,
-    _id: "2",
-  },
-  {
-    name: "Salads",
-    image: desserts,
-    price: 200,
-    _id: "3",
-  },
-  {
-    name: "Diet foods",
-    image: desserts,
-    price: 200,
-    _id: "4",
-  },
-  {
-    name: "Smoothies",
-    image: desserts,
-    price: 200,
-    _id: "5",
-  },
-  {
-    name: "Soups",
-    image: desserts,
-    price: 200,
-    _id: "6",
-  },
-  {
-    name: "Specials",
-    image: desserts,
-    price: 200,
-    _id: "7",
-  },
-  {
-    name: "Parfaits",
-    image: desserts,
-    price: 200,
-    _id: "8",
-  },
-];
+// const menu = [
+//   {
+//     name: "Deserts",
+//     image: desserts,
+//     price: 200,
+//     _id: "1",
+//   },
+//   {
+//     name: "Lean meat",
+//     image: desserts,
+//     price: 200,
+//     _id: "2",
+//   },
+//   {
+//     name: "Salads",
+//     image: desserts,
+//     price: 200,
+//     _id: "3",
+//   },
+//   {
+//     name: "Diet foods",
+//     image: desserts,
+//     price: 200,
+//     _id: "4",
+//   },
+//   {
+//     name: "Smoothies",
+//     image: desserts,
+//     price: 200,
+//     _id: "5",
+//   },
+//   {
+//     name: "Soups",
+//     image: desserts,
+//     price: 200,
+//     _id: "6",
+//   },
+//   {
+//     name: "Specials",
+//     image: desserts,
+//     price: 200,
+//     _id: "7",
+//   },
+//   {
+//     name: "Parfaits",
+//     image: desserts,
+//     price: 200,
+//     _id: "8",
+//   },
+// ];
 const BackButtonheader = ({ setNutritionalValue }) => {
   const navigation = useNavigation();
   return (
@@ -145,7 +147,7 @@ const ItemInfo = ({
       <Image
         resizeMode="contain"
         className="w-full h-72 mx-auto"
-        source={{ uri: image }}
+        source={image}
       />
       <Text className="text-2xl font-bold text-dark">{name}</Text>
       <Text className="text-xl text-dark">510 Cal.</Text>
@@ -236,21 +238,16 @@ export const FoodScreen = ({ navigation, route }) => {
     const item = menu.find((item) => item._id == _id);
     return item;
   }, [_id]);
+
   const { price, name, image } = activeItem ?? {};
   console.info(activeItem);
   return (
     <>
       {!viewingNutritionalValue ? (
-        <View className="pt-12 flex h-screen relative">
+        <View className="pt-12 flex-1 bg-white flex h-screen relative">
           <BackButtonheader setNutritionalValue={setViewingNutritionalValue} />
           <View className="px-4 flex-1  pt-12">
-            <ItemInfo
-              image={
-                "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
-              }
-              name={name}
-              price={price}
-            />
+            <ItemInfo image={image} name={name} price={price} />
             <ServingsDisplay
               itemQuantity={itemQuantity}
               setItemQuantity={setItemQuantity}
@@ -263,6 +260,7 @@ export const FoodScreen = ({ navigation, route }) => {
       ) : (
         <NutritionalValue setNutritionalValue={setViewingNutritionalValue} />
       )}
+      <StatusBar hidden={false} backgroundColor="white" />
     </>
   );
 };

@@ -6,22 +6,31 @@ import {
   OrdersPage,
   FoodScreen,
   LocationScreen,
+  FoodMenu,
+  CheckoutScreen,
 } from "../screens";
 import OnboardingRoutes from "./OnboardingRoutes";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 // import DietPlanner from "../screens/dietplanner";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
+import { useCartContext } from "../hooks/useCartContext";
+import { useMemo } from "react";
 
 type RootTabsParamList = {
   Home: undefined;
   Diet: undefined;
   Cart: undefined;
   Orders: undefined;
+  FoodMenu: undefined;
 };
 
 const Tab = createBottomTabNavigator<RootTabsParamList>();
 
 function AppTabsNavigator() {
+  const { cartItems } = useCartContext();
+
+  const count = useMemo(() => cartItems.length, [cartItems]);
+
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen
@@ -34,21 +43,33 @@ function AppTabsNavigator() {
       <Tab.Screen
         options={{
           tabBarIcon: () => (
-            <MaterialIcons name="fastfood" size={24} color="black" />
+            <MaterialIcons name="menu-book" size={24} color="black" />
           ),
+          title: "Menu",
         }}
-        name="Diet"
-        component={DietPlanner}
+        name="FoodMenu"
+        component={FoodMenu}
       />
+
       <Tab.Screen
         options={{
           tabBarStyle: { display: "none" },
           tabBarIcon: () => (
             <Feather name="shopping-cart" size={24} color="black" />
           ),
+          tabBarBadge: count > 0 ? count : undefined,
         }}
         name="Cart"
         component={Cart}
+      />
+      <Tab.Screen
+        options={{
+          tabBarIcon: () => (
+            <MaterialIcons name="fastfood" size={24} color="black" />
+          ),
+        }}
+        name="Diet"
+        component={DietPlanner}
       />
       <Tab.Screen
         options={{
@@ -68,6 +89,7 @@ type RootStackParamList = {
   OnBoarding: undefined;
   FoodScreen: undefined;
   LocationScreen: undefined;
+  Checkout: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -79,6 +101,7 @@ const AppStack = () => {
       <Stack.Screen name="App" component={AppTabsNavigator} />
       <Stack.Screen name="FoodScreen" component={FoodScreen} />
       <Stack.Screen name="LocationScreen" component={LocationScreen} />
+      <Stack.Screen name="Checkout" component={CheckoutScreen} />
     </Stack.Navigator>
   );
 };

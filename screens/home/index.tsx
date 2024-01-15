@@ -5,6 +5,7 @@ import {
   ScrollView,
   FlatList,
   Pressable,
+  TouchableOpacity,
 } from "react-native";
 import { SearchBar, Screen, Header } from "../../components";
 import { desserts } from "../../assets";
@@ -13,7 +14,7 @@ import { StatusBar } from "expo-status-bar";
 import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useCartContext } from "../../hooks/useCartContext";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   leanmeat,
   parfait,
@@ -22,57 +23,59 @@ import {
   soups,
   special,
 } from "../../assets";
+import { TcartItem } from "../../contexts/CartContext";
+import { menu } from "../../constants/menu";
 
-const menu = [
-  {
-    name: "Deserts",
-    image: desserts,
-    price: 200,
-    _id: "1",
-  },
-  {
-    name: "Lean meat",
-    image: desserts,
-    price: 200,
-    _id: "2",
-  },
-  {
-    name: "Salads",
-    image: desserts,
-    price: 200,
-    _id: "3",
-  },
-  {
-    name: "Diet foods",
-    image: desserts,
-    price: 200,
-    _id: "4",
-  },
-  {
-    name: "Smoothies",
-    image: desserts,
-    price: 200,
-    _id: "5",
-  },
-  {
-    name: "Soups",
-    image: desserts,
-    price: 200,
-    _id: "6",
-  },
-  {
-    name: "Specials",
-    image: desserts,
-    price: 200,
-    _id: "7",
-  },
-  {
-    name: "Parfaits",
-    image: desserts,
-    price: 200,
-    _id: "8",
-  },
-];
+// const menu = [
+//   {
+//     name: "Deserts",
+//     image: desserts,
+//     price: 200,
+//     _id: "1",
+//   },
+//   {
+//     name: "Lean meat",
+//     image: desserts,
+//     price: 200,
+//     _id: "2",
+//   },
+//   {
+//     name: "Salads",
+//     image: desserts,
+//     price: 200,
+//     _id: "3",
+//   },
+//   {
+//     name: "Diet foods",
+//     image: desserts,
+//     price: 200,
+//     _id: "4",
+//   },
+//   {
+//     name: "Smoothies",
+//     image: desserts,
+//     price: 200,
+//     _id: "5",
+//   },
+//   {
+//     name: "Soups",
+//     image: desserts,
+//     price: 200,
+//     _id: "6",
+//   },
+//   {
+//     name: "Specials",
+//     image: desserts,
+//     price: 200,
+//     _id: "7",
+//   },
+//   {
+//     name: "Parfaits",
+//     image: desserts,
+//     price: 200,
+//     _id: "8",
+//   },
+// ];
 const categories = [
   {
     name: "Desserts",
@@ -117,11 +120,52 @@ type RootTabsParamList = {
 
 function MenuItem({ image, title }: any) {
   return (
-    <View className=" inline-flex  mr-8    items-center">
+    <View className=" inline-flex flex-row bg-white shadow shadow-black border border-gray-400  mr-4 px-4 rounded-lg   items-center">
       {/* <SvgComponent /> */}
-      <Image resizeMode="cover" className="w-28 h-28" source={image} />
+      <Image resizeMode="contain" className="w-20 h-20" source={image} />
       <Text className="text-sm font-bold text-dark">{title}</Text>
     </View>
+  );
+}
+
+function AddToCartButton({
+  addToCart,
+  _id,
+  cartItems,
+}: {
+  addToCart: (t: any) => void;
+  _id: string;
+  cartItems: TcartItem[];
+}) {
+  const isAlreadyInCart = useMemo(() => {
+    const cartItem = cartItems?.find((cartItem: any) => cartItem._id == _id);
+
+    if (cartItem) {
+      return true;
+    }
+
+    return false;
+  }, [cartItems, _id]);
+
+  return (
+    <TouchableOpacity
+      onPress={addToCart}
+      className=" border px-4 w-28 inline-flex items-center py-1 rounded-3xl border-dark"
+    >
+      <Text className="text-xs font-medium">
+        {isAlreadyInCart ? "Added" : "Add to cart"}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+function LikeButton({ setLiked, liked }: any) {
+  return (
+    <Pressable
+      onPress={() => setLiked(!liked)}
+      className="absolute top-2 right-4"
+    >
+      <Feather name="heart" size={24} color={liked ? "red" : "black"} />
+    </Pressable>
   );
 }
 
@@ -130,11 +174,13 @@ function DishPreviewCard({
   image,
   addToCart,
   _id,
+  cartItems,
 }: {
   title: string;
   image: string;
   _id: string;
   addToCart: (t: any) => void;
+  cartItems: TcartItem[];
 }) {
   const navigation = useNavigation();
   const [liked, setLiked] = useState();
@@ -146,12 +192,14 @@ function DishPreviewCard({
           // @ts-ignore
           navigation.navigate("FoodScreen", {
             _id: _id,
+            title: title,
+            image: image,
           })
         }
         className="relative"
       >
         <Image
-          source={{ uri: image }}
+          source={image}
           className="w-full  h-56 rounded-xl     object-cover"
         />
 
@@ -159,23 +207,17 @@ function DishPreviewCard({
         <View className="absolute rounded-xl top-0 bottom-0 left-0 right-0 bg-black/20 "></View>
       </Pressable>
       {/* LIKEBUTTON */}
-      <Pressable
-        onPress={() => setLiked(!liked)}
-        className="absolute top-2 right-4"
-      >
-        <Feather name="heart" size={24} color={liked ? "red" : "black"} />
-      </Pressable>
+      <LikeButton liked={liked} setLiked={setLiked} />
       <View className="py-2 flex flex-row items-center justify-between">
         <View className="flex">
           <Text className="text-xl font-medium">{title}</Text>
           <Text className="text-lg">$15.00</Text>
         </View>
-        <Pressable
-          onPress={addToCart}
-          className=" border px-4 w-28 inline-flex items-center py-1 rounded-3xl border-dark"
-        >
-          <Text className="text-sm font-medium">Add to cart</Text>
-        </Pressable>
+        <AddToCartButton
+          cartItems={cartItems}
+          _id={_id}
+          addToCart={addToCart}
+        />
       </View>
     </Pressable>
   );
@@ -184,7 +226,7 @@ function DishPreviewCard({
 const Stack = createNativeStackNavigator();
 
 const HomeMenu = () => {
-  const { addToCart } = useCartContext();
+  const { addToCart, cartItems } = useCartContext();
 
   return (
     <Screen style="">
@@ -195,7 +237,8 @@ const HomeMenu = () => {
       <View>
         <ScrollView
           contentContainerStyle={{
-            paddingTop: 20,
+            paddingVertical: 20,
+            paddingHorizontal: 5,
           }}
           horizontal
         >
@@ -215,11 +258,10 @@ const HomeMenu = () => {
           data={menu}
           renderItem={({ item }) => (
             <DishPreviewCard
+              cartItems={cartItems}
               _id={item._id}
               addToCart={() => addToCart({ ...item, quantity: 1 })}
-              image={
-                "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
-              }
+              image={item.image}
               title={item.name}
             />
           )}
@@ -236,10 +278,10 @@ const HomeMenu = () => {
           data={menu}
           renderItem={({ item }) => (
             <DishPreviewCard
-              addToCart={() => addToCart(item)}
-              image={
-                "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
-              }
+              cartItems={cartItems}
+              _id={item._id}
+              addToCart={() => addToCart({ ...item, quantity: 1 })}
+              image={item.image}
               title={item.name}
             />
           )}

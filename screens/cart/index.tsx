@@ -1,4 +1,11 @@
-import { View, Text, Pressable, Image, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { useMemo } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -10,8 +17,13 @@ import { EmptyState } from "../../components";
 type Props = {};
 
 const CheckoutButton = () => {
-  const { getCartTotal } = useCartContext();
+  const { getCartTotal, cartItems } = useCartContext();
   const cartTotal = getCartTotal();
+
+  const cartIsEmpty = useMemo(() => cartItems.length == 0, [cartItems]);
+
+  const navigate = useNavigation();
+
   return (
     <View className="absolute bg-white  bottom-0 left-0 right-0 pb-10 pt-6 space-y-5 border-gray-300 px-4 border-t">
       <View className="flex-row items-center justify-between">
@@ -22,9 +34,14 @@ const CheckoutButton = () => {
           ${cartTotal}
         </Text>
       </View>
-      <Pressable className=" inline-flex border py-4 rounded-lg bg-dark px-4 justify-center items-center">
-        <Text className=" text-white text-xl font-medium">Checkout</Text>
-      </Pressable>
+      <TouchableOpacity
+        onPress={cartIsEmpty ? () => navigate.navigate("Home") : () => {}}
+        className=" inline-flex border py-4 rounded-lg bg-dark px-4 justify-center items-center"
+      >
+        <Text className=" text-white text-xl font-medium">
+          {!cartIsEmpty ? "Checkout" : "Continue Shopping"}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -66,17 +83,17 @@ const CheckOutItem = ({
         <Text className="text-lg font-medium">{name}</Text>
         <Text className="text-lg font-medium">${total}</Text>
         <View className="flex-row items-center space-x-4 pt-4">
-          <FontAwesome
-            onPress={handleReduceQuantity}
-            size={20}
-            name="minus-circle"
-          />
+          <TouchableOpacity onPress={handleReduceQuantity}>
+            <FontAwesome size={20} name="minus-circle" />
+          </TouchableOpacity>
           <Text className="text-lg text-dark">{quantity}</Text>
-          <FontAwesome
-            onPress={handleIncreaseQuantity}
-            size={20}
-            name="plus-circle"
-          />
+          <TouchableOpacity>
+            <FontAwesome
+              onPress={handleIncreaseQuantity}
+              size={20}
+              name="plus-circle"
+            />
+          </TouchableOpacity>
         </View>
       </View>
       <View className="relative">

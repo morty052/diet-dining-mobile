@@ -8,3 +8,5 @@ export * from "./foodscreen";
 export * from "./onboardingscreen";
 export * from "./signupscreen";
 export * from "./locationscreen";
+export * from "./foodmenu";
+export * from "./checkoutscreen";

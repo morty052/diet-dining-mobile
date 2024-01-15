@@ -3,6 +3,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import AppRoutes from "./routes/AppRoutes";
 import CartContextProvider from "./contexts/CartContext";
 import { ClerkProvider } from "@clerk/clerk-expo";
+import { useFonts, loadAsync } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { useCallback, useEffect } from "react";
+import { View } from "react-native";
 
 export default function App() {
   return (
