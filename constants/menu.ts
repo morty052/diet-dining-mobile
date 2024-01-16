@@ -11,50 +11,66 @@ import {
 
 export const menu = [
   {
-    name: "Deserts",
+    name: "Chicken Salad",
     image: chicken_salad,
+    description:
+      "Chicken salad is any salad with chicken as a main ingredient. Other common ingredients may include mayonnaise, hard-boiled egg, celery, onion, pepper, pickles and a variety of mustards.",
     price: 200,
     _id: "1",
   },
   {
-    name: "Lean meat",
+    name: "Chicken potato salad",
     image: chicken_potato_salad,
+    description:
+      "Chicken salad is any salad with chicken as a main ingredient. Other common ingredients may include mayonnaise, hard-boiled egg, celery, onion, pepper, pickles and a variety of mustards.",
     price: 200,
     _id: "2",
   },
   {
-    name: "Salads",
+    name: "Fish and lemon",
     image: fish_meal,
+    description:
+      "Chicken salad is any salad with chicken as a main ingredient. Other common ingredients may include mayonnaise, hard-boiled egg, celery, onion, pepper, pickles and a variety of mustards.",
     price: 200,
     _id: "3",
   },
   {
-    name: "Diet foods",
+    name: "Meat and potatoes",
     image: meat_potato_meal,
+    description:
+      "Chicken salad is any salad with chicken as a main ingredient. Other common ingredients may include mayonnaise, hard-boiled egg, celery, onion, pepper, pickles and a variety of mustards.",
     price: 200,
     _id: "4",
   },
   {
-    name: "Smoothies",
+    name: "Fried rice prawns meal",
     image: friedrice_prawns_meal,
+    description:
+      "Chicken salad is any salad with chicken as a main ingredient. Other common ingredients may include mayonnaise, hard-boiled egg, celery, onion, pepper, pickles and a variety of mustards.",
     price: 200,
     _id: "5",
   },
   {
-    name: "Soups",
+    name: "Vegetable salad",
     image: vegetable_salad,
+    description:
+      "Chicken salad is any salad with chicken as a main ingredient. Other common ingredients may include mayonnaise, hard-boiled egg, celery, onion, pepper, pickles and a variety of mustards.",
     price: 200,
     _id: "6",
   },
   {
-    name: "Specials",
+    name: "Ceaser Salad",
     image: ceaser_salad,
+    description:
+      "Chicken salad is any salad with chicken as a main ingredient. Other common ingredients may include mayonnaise, hard-boiled egg, celery, onion, pepper, pickles and a variety of mustards.",
     price: 200,
     _id: "7",
   },
   {
-    name: "Parfaits",
+    name: "Fish rice and vegetables",
     image: fish_rice_vegetables,
+    description:
+      "Chicken salad is any salad with chicken as a main ingredient. Other common ingredients may include mayonnaise, hard-boiled egg, celery, onion, pepper, pickles and a variety of mustards.",
     price: 200,
     _id: "8",
   },

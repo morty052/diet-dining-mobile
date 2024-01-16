@@ -7,6 +7,7 @@ import { useFonts, loadAsync } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect } from "react";
 import { View } from "react-native";
+import { RootSiblingParent } from "react-native-root-siblings";
 
 export default function App() {
   return (
@@ -15,9 +16,11 @@ export default function App() {
     >
       <CartContextProvider>
         {/* // @ts-ignore */}
-        <NavigationContainer>
-          <AppRoutes />
-        </NavigationContainer>
+        <RootSiblingParent>
+          <NavigationContainer>
+            <AppRoutes />
+          </NavigationContainer>
+        </RootSiblingParent>
       </CartContextProvider>
     </ClerkProvider>
   );

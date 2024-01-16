@@ -7,19 +7,18 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useMemo } from "react";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import desserts from "../../assets/desserts.png";
-import burger from "../../assets/test.png";
-import { useCartContext } from "../../hooks/useCartContext";
 import { EmptyState } from "../../components";
+import { useCartStore } from "../../store/cartStore";
+import { TcartItem } from "../../contexts/CartContext";
 
 type Props = {};
 
 const CheckoutButton = () => {
-  const { getCartTotal, cartItems } = useCartContext();
-  const cartTotal = getCartTotal();
+  const { cartItems, getCartTotal } = useCartStore();
 
+  const total = useMemo(() => getCartTotal(), [cartItems]);
   const cartIsEmpty = useMemo(() => cartItems.length == 0, [cartItems]);
 
   const navigate = useNavigation();
@@ -31,7 +30,7 @@ const CheckoutButton = () => {
           Total:
         </Text>
         <Text className="text-center font-medium text-2xl text-dark">
-          ${cartTotal}
+          ${total}
         </Text>
       </View>
       <TouchableOpacity
@@ -54,9 +53,9 @@ const BackButtonheader = () => {
         className=" flex flex-row justify-between items-center"
         onPress={() => navigation.goBack()}
       >
-        <View className="border h-8 w-8 rounded-full flex justify-center items-center">
-          <FontAwesome size={20} color="black" name="close" />
-        </View>
+        {/* <View className="border h-8 w-8 rounded-full flex justify-center items-center">
+        </View> */}
+        <AntDesign size={20} color="black" name="arrowleft" />
       </Pressable>
     </View>
   );
@@ -74,31 +73,27 @@ const CheckOutItem = ({
   name: string;
   quantity: number;
   total: number;
-  handleReduceQuantity: () => void;
-  handleIncreaseQuantity: () => void;
+  handleReduceQuantity: any;
+  handleIncreaseQuantity: any;
 }) => {
   return (
-    <View className="pt-16 pr-2 flex-row items-center justify-between">
+    <View className="pt-4  flex-row items-center justify-between">
       <View className=" flex-1">
-        <Text className="text-lg font-medium">{name}</Text>
-        <Text className="text-lg font-medium">${total}</Text>
-        <View className="flex-row items-center space-x-4 pt-4">
+        <Text className="text-xl font-medium text-dark">{name}</Text>
+        <Text className="text-lg  text-dark">${total}</Text>
+        <View className="flex-row items-center space-x-2 ">
           <TouchableOpacity onPress={handleReduceQuantity}>
-            <FontAwesome size={20} name="minus-circle" />
+            <AntDesign name="minuscircleo" size={24} color="black" />
           </TouchableOpacity>
           <Text className="text-lg text-dark">{quantity}</Text>
-          <TouchableOpacity>
-            <FontAwesome
-              onPress={handleIncreaseQuantity}
-              size={20}
-              name="plus-circle"
-            />
+          <TouchableOpacity onPress={handleIncreaseQuantity}>
+            <AntDesign name="pluscircleo" size={24} color="black" />
           </TouchableOpacity>
         </View>
       </View>
       <View className="relative">
-        <Image className="h-24 w-24" source={image} />
-        <View className=" absolute -top-6 right-0 rounded-full flex justify-center items-center h-8 w-8 bg-dark">
+        <Image resizeMode="contain" className="h-32 w-40" source={image} />
+        <View className=" absolute top-0 right-2 rounded-full flex justify-center items-center h-8 w-8 bg-dark">
           <Text className="text-white">{quantity}</Text>
         </View>
       </View>
@@ -116,8 +111,8 @@ const InnerCart = ({
   decreaseItemQuantity: (t: any) => void;
 }) => {
   return (
-    <View className="space-y-10">
-      {cartItems?.map((item, index) => (
+    <View className="space-y-4">
+      {cartItems?.map((item: TcartItem, index: number) => (
         <View key={index}>
           <CheckOutItem
             handleIncreaseQuantity={() => increaseItemQuantity(item._id)}
@@ -125,7 +120,7 @@ const InnerCart = ({
             total={item.total}
             name={item.name}
             quantity={item.quantity}
-            image={burger}
+            image={item.image}
           />
         </View>
       ))}
@@ -135,7 +130,9 @@ const InnerCart = ({
 
 export const Cart = (props: Props) => {
   const { cartItems, decreaseItemQuantity, increaseItemQuantity } =
-    useCartContext();
+    useCartStore();
+
+  console.info(cartItems);
 
   const emptyCart = useMemo(() => {
     if (cartItems.length < 1) {

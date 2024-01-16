@@ -15,6 +15,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
 import { useCartContext } from "../hooks/useCartContext";
 import { useMemo } from "react";
+import { useCartStore } from "../store/cartStore";
 
 type RootTabsParamList = {
   Home: undefined;
@@ -27,9 +28,7 @@ type RootTabsParamList = {
 const Tab = createBottomTabNavigator<RootTabsParamList>();
 
 function AppTabsNavigator() {
-  const { cartItems } = useCartContext();
-
-  const count = useMemo(() => cartItems.length, [cartItems]);
+  const { itemsCount } = useCartStore();
 
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
@@ -57,7 +56,7 @@ function AppTabsNavigator() {
           tabBarIcon: () => (
             <Feather name="shopping-cart" size={24} color="black" />
           ),
-          tabBarBadge: count > 0 ? count : undefined,
+          tabBarBadge: itemsCount > 0 ? itemsCount : undefined,
         }}
         name="Cart"
         component={Cart}

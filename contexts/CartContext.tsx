@@ -1,5 +1,6 @@
 // @ts-ignore
 import { createContext, ReactNode, useState } from "react";
+import Toast from "react-native-root-toast";
 
 export type TcartItem = {
   price: number;
@@ -7,6 +8,7 @@ export type TcartItem = {
   _id: string;
   quantity: number;
   total?: number;
+  image?: string;
 };
 
 export type TCartContextType = {
@@ -120,6 +122,13 @@ const CartContextProvider = ({ children }: { children?: ReactNode }) => {
       };
       setCartItems((prev: TcartItem[]) => [...prev, newItem]);
       console.info("added Item to cart", newItem);
+      Toast.show("Added to cart.", {
+        duration: Toast.durations.LONG,
+        position: Toast.positions.BOTTOM,
+        backgroundColor: "#90C466",
+        textColor: "#ffffff",
+        opacity: 1,
+      });
       return;
 
       //   UPDATE QUANTITY AND TOTAL PRICE OF ITEM IF PRESENT

@@ -6,6 +6,7 @@ import {
   FlatList,
   Pressable,
   TouchableOpacity,
+  ImageSourcePropType,
 } from "react-native";
 import { SearchBar, Screen, Header } from "../../components";
 import { desserts } from "../../assets";
@@ -25,6 +26,7 @@ import {
 } from "../../assets";
 import { TcartItem } from "../../contexts/CartContext";
 import { menu } from "../../constants/menu";
+import { useCartStore } from "../../store/cartStore";
 
 // const menu = [
 //   {
@@ -137,11 +139,11 @@ function AddToCartButton({
   _id: string;
   cartItems: TcartItem[];
 }) {
-  const isAlreadyInCart = useMemo(() => {
+  const count = useMemo(() => {
     const cartItem = cartItems?.find((cartItem: any) => cartItem._id == _id);
 
     if (cartItem) {
-      return true;
+      return cartItem.quantity;
     }
 
     return false;
@@ -150,10 +152,10 @@ function AddToCartButton({
   return (
     <TouchableOpacity
       onPress={addToCart}
-      className=" border px-4 w-28 inline-flex items-center py-1 rounded-3xl border-dark"
+      className=" border px-4 w-32 inline-flex items-center py-2 rounded-3xl border-dark"
     >
       <Text className="text-xs font-medium">
-        {isAlreadyInCart ? "Added" : "Add to cart"}
+        {count ? ` (${count}) In Cart` : "Add to cart"}
       </Text>
     </TouchableOpacity>
   );
@@ -177,7 +179,7 @@ function DishPreviewCard({
   cartItems,
 }: {
   title: string;
-  image: string;
+  image: ImageSourcePropType;
   _id: string;
   addToCart: (t: any) => void;
   cartItems: TcartItem[];
@@ -186,7 +188,7 @@ function DishPreviewCard({
   const [liked, setLiked] = useState();
 
   return (
-    <Pressable className="flex-1  mr-4 w-[80vw]">
+    <Pressable className="flex-1  mr-6 w-[80vw]">
       <Pressable
         onPress={() =>
           // @ts-ignore
@@ -210,7 +212,7 @@ function DishPreviewCard({
       <LikeButton liked={liked} setLiked={setLiked} />
       <View className="py-2 flex flex-row items-center justify-between">
         <View className="flex">
-          <Text className="text-xl font-medium">{title}</Text>
+          <Text className=" font-medium">{title}</Text>
           <Text className="text-lg">$15.00</Text>
         </View>
         <AddToCartButton
@@ -226,7 +228,8 @@ function DishPreviewCard({
 const Stack = createNativeStackNavigator();
 
 const HomeMenu = () => {
-  const { addToCart, cartItems } = useCartContext();
+  // const { cartItems } = useCartContext();
+  const { addToCart, cartItems } = useCartStore();
 
   return (
     <Screen style="">

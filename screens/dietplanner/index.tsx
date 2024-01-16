@@ -369,8 +369,7 @@ export const DietPlanner = ({ navigation }) => {
     <>
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
-        children
-        initialRouteName="DailyDiet"
+        initialRouteName="DietHome"
       >
         <Stack.Screen name="DailyDiet" component={DailyDiet} />
         <Stack.Screen name="DietHome" component={DietHomePage} />
