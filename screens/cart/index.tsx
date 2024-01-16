@@ -34,7 +34,11 @@ const CheckoutButton = () => {
         </Text>
       </View>
       <TouchableOpacity
-        onPress={cartIsEmpty ? () => navigate.navigate("Home") : () => {}}
+        onPress={
+          cartIsEmpty
+            ? () => navigate.navigate("Home")
+            : () => navigate.navigate("Checkout")
+        }
         className=" inline-flex border py-4 rounded-lg bg-dark px-4 justify-center items-center"
       >
         <Text className=" text-white text-xl font-medium">

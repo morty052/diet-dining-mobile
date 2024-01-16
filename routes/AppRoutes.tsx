@@ -16,6 +16,13 @@ import { Feather, MaterialIcons } from "@expo/vector-icons";
 import { useCartContext } from "../hooks/useCartContext";
 import { useMemo } from "react";
 import { useCartStore } from "../store/cartStore";
+import { Image } from "react-native";
+
+import cart_icon from "../assets/icons/cart-icon.png";
+import orders_icon from "../assets/icons/orders-icon.png";
+import home_icon from "../assets/icons/home-icon.png";
+import foodmenu_icon from "../assets/icons/foodmenu-icon.png";
+import dietplanner_icon from "../assets/icons/dietplanner-icon.png";
 
 type RootTabsParamList = {
   Home: undefined;
@@ -31,18 +38,28 @@ function AppTabsNavigator() {
   const { itemsCount } = useCartStore();
 
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: { height: 60 },
+        tabBarLabelStyle: { fontSize: 12, fontWeight: "500" },
+      }}
+    >
       <Tab.Screen
         name="Home"
         options={{
-          tabBarIcon: () => <Feather name="home" size={24} color="black" />,
+          tabBarIcon: () => (
+            //  <Feather name="home" size={24} color="black" />,
+            <Image style={{ width: 30, height: 30 }} source={home_icon} />
+          ),
         }}
         component={Home}
       />
       <Tab.Screen
         options={{
           tabBarIcon: () => (
-            <MaterialIcons name="menu-book" size={24} color="black" />
+            // <MaterialIcons name="menu-book" size={24} color="black" />
+            <Image style={{ width: 30, height: 30 }} source={foodmenu_icon} />
           ),
           title: "Menu",
         }}
@@ -54,7 +71,8 @@ function AppTabsNavigator() {
         options={{
           tabBarStyle: { display: "none" },
           tabBarIcon: () => (
-            <Feather name="shopping-cart" size={24} color="black" />
+            // <Feather name="shopping-cart" size={24} color="black" />
+            <Image style={{ width: 30, height: 30 }} source={cart_icon} />
           ),
           tabBarBadge: itemsCount > 0 ? itemsCount : undefined,
         }}
@@ -64,7 +82,11 @@ function AppTabsNavigator() {
       <Tab.Screen
         options={{
           tabBarIcon: () => (
-            <MaterialIcons name="fastfood" size={24} color="black" />
+            // <MaterialIcons name="fastfood" size={24} color="black" />
+            <Image
+              style={{ width: 30, height: 30 }}
+              source={dietplanner_icon}
+            />
           ),
         }}
         name="Diet"
@@ -73,7 +95,8 @@ function AppTabsNavigator() {
       <Tab.Screen
         options={{
           tabBarIcon: () => (
-            <MaterialIcons name="menu-book" size={24} color="black" />
+            // <MaterialIcons name="menu-book" size={24} color="black" />
+            <Image style={{ width: 30, height: 30 }} source={orders_icon} />
           ),
         }}
         name="Orders"

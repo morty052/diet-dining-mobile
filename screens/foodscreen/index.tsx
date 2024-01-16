@@ -75,20 +75,17 @@ const BackButtonheader = ({
 }) => {
   const navigation = useNavigation();
   return (
-    <View className="px-4 ">
-      <Pressable
-        className=" flex flex-row justify-between items-center"
-        onPress={() => navigation.goBack()}
-      >
+    <View className="px-4 flex flex-row justify-between items-center">
+      <TouchableOpacity className="w-20" onPress={() => navigation.goBack()}>
         <AntDesign name="arrowleft" size={24} color="black" />
-        <TouchableOpacity
-          onPress={() => setNutritionalValue(true)}
-          className="px-4 py-2 rounded-full bg-primary flex-row items-center space-x-2"
-        >
-          <Text className="text-white text-xs">Nutritional Value</Text>
-          <FontAwesome color="white" size={10} name="arrow-right" />
-        </TouchableOpacity>
-      </Pressable>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => setNutritionalValue(true)}
+        className="px-4 py-2 rounded-full bg-primary flex-row items-center space-x-2"
+      >
+        <Text className="text-white text-xs">Nutritional Value</Text>
+        <FontAwesome color="white" size={10} name="arrow-right" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -172,13 +169,13 @@ const ServingsDisplay = ({
               : setItemQuantity((prev: number) => prev - 1)
           }
         >
-          <AntDesign size={30} name="minuscircleo" />
+          <AntDesign size={50} name="minuscircleo" />
         </TouchableOpacity>
-        <Text className="text-lg text-dark">{itemQuantity}</Text>
+        <Text className="text-xl font-medium text-dark">{itemQuantity}</Text>
         <TouchableOpacity
           onPress={() => setItemQuantity((prev: number) => prev + 1)}
         >
-          <AntDesign name="pluscircleo" size={30} color="black" />
+          <AntDesign name="pluscircleo" size={50} color="black" />
         </TouchableOpacity>
       </View>
     </View>
@@ -248,7 +245,7 @@ const ItemInfo = ({
     <>
       <Image
         resizeMode="contain"
-        className="w-full h-96 mx-auto -mt-6"
+        className="w-full h-96 mx-auto "
         source={image}
       />
       <View className="-mt-6">

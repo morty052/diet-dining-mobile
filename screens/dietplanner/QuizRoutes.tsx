@@ -1,10 +1,14 @@
-import { View, Text, Pressable } from "react-native";
-import { useState } from "react";
+import { View, Text, Pressable, TouchableOpacity } from "react-native";
+import { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { Screen } from "../../components";
 import { useNavigation } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
+import LottieView from "lottie-react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import sandwich from "../../assets/lottie/sandwichlottie.json";
+import { useQuizStore } from "../../store/quizStore";
 
 type Props = {};
 
@@ -155,12 +159,12 @@ const NextButton = ({
 }) => {
   return (
     <View className="absolute flex flex-row justify-center left-0 right-0 bottom-40  px-4">
-      <Pressable
+      <TouchableOpacity
         onPress={() => navigation.navigate(screen)}
         className="flex w-full max-w-md rounded-lg px-6 py-4 border items-center justify-center"
       >
         <Text className="text-lg font-medium">Next</Text>
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -207,24 +211,94 @@ const Allergies = ({ navigation }: { navigation: any }) => {
   );
 };
 
+const GettingPlanReadyScreen = () => {
+  return (
+    <SafeAreaView className="pt-8 bg-gray-200 flex-1">
+      <LottieView
+        source={sandwich}
+        autoPlay
+        loop
+        style={{ width: 300, height: 300, alignSelf: "center" }}
+      />
+      <View className="px-2 space-y-2">
+        <Text className="text-center text-dark  text-4xl font-semibold">
+          Getting plan ready
+        </Text>
+        <Text className="text-center text-dark text-[15px]  font-medium">
+          Give us a second to make sure we get the perfect diet plan for you.
+        </Text>
+      </View>
+    </SafeAreaView>
+  );
+};
+
 const DietBudget = ({ navigation }: { navigation: any }) => {
   const [selected, setSelected] = useState("");
-  return (
-    <View className="h-screen bg-gray-200 px-4">
-      <View className=" py-8">
-        <View className="py-8">
-          <Text className="text-center text-dark  text-3xl">
-            How much would you like to spend on your daily diet?
-          </Text>
-        </View>
-        <QuestionGrid
-          selected={selected}
-          setSelected={setSelected}
-          questions={budgetAnswers}
-        />
+  const [gettingDietPlan, setGettingDietPlan] = useState(false);
+
+  const { setPlan } = useQuizStore();
+
+  const handleDietPlan = () => {
+    setGettingDietPlan(true);
+
+    // navigation.navigate("DietPlan");
+  };
+
+  useEffect(() => {
+    if (!gettingDietPlan) {
+      return;
+    }
+    const timer = setTimeout(() => {
+      setGettingDietPlan(false);
+      setPlan(selected);
+    }, 8000);
+
+    // return () => {
+    //   clearTimeout(timer);
+    // };
+  }, [gettingDietPlan]);
+
+  const NextButton = ({
+    navigation,
+    screen,
+  }: {
+    navigation: any;
+    screen: string;
+  }) => {
+    return (
+      <View className="absolute flex flex-row justify-center left-0 right-0 bottom-40  px-4">
+        <TouchableOpacity
+          onPress={handleDietPlan}
+          className="flex w-full max-w-md rounded-lg px-6 py-4 border items-center justify-center"
+        >
+          <Text className="text-lg font-medium">Next</Text>
+        </TouchableOpacity>
       </View>
-      <NextButton screen="DietHome" navigation={navigation} />
-    </View>
+    );
+  };
+
+  return (
+    <>
+      {!gettingDietPlan ? (
+        <View className="h-screen bg-gray-200 px-4">
+          <View className=" py-8">
+            <View className="py-8">
+              <Text className="text-center text-dark  text-3xl">
+                How much would you like to spend on your daily diet?
+              </Text>
+            </View>
+            <QuestionGrid
+              selected={selected}
+              setSelected={setSelected}
+              questions={budgetAnswers}
+            />
+          </View>
+          <NextButton screen="DietHome" navigation={navigation} />
+        </View>
+      ) : (
+        <GettingPlanReadyScreen />
+      )}
+    </>
   );
 };
 
@@ -241,9 +315,8 @@ const QuizRoutes = (props: Props) => {
     <>
       <Stack.Navigator
         screenOptions={{
-          header: (navigation) => <BackButtonheader navigation={navigation} />,
+          header: (navigation) => <BackButtonheader />,
         }}
-        children
       >
         <Stack.Screen name="Preferences" component={Preferences} />
         <Stack.Screen name="Allergies" component={Allergies} />

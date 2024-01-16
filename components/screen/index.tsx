@@ -1,5 +1,6 @@
 import { View, Text, ScrollView } from "react-native";
 import React from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type Props = {};
 
@@ -11,10 +12,12 @@ export const Screen = ({
   style?: string;
 }) => {
   return (
-    <ScrollView
-      className={`flex flex-1 min-h-screen flex-col pt-12 bg-gray-200 px-4 ${style}`}
-    >
-      {children}
-    </ScrollView>
+    <SafeAreaView className={`${style} flex-1`}>
+      <ScrollView
+        className={`flex w-full flex-1 min-h-screen flex-col px-2 pt-2  bg-gray-200`}
+      >
+        {children}
+      </ScrollView>
+    </SafeAreaView>
   );
 };

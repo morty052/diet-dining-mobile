@@ -4,3 +4,5 @@ export * from "./header";
 export * from "./button";
 export * from "./emptystate";
 export * from "./text";
+export * from "./dishpreviewcard";
+export * from "./foodcategorygrid";

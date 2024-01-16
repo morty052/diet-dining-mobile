@@ -5,7 +5,7 @@ type Props = {};
 
 export const SearchBar = (props: Props) => {
   return (
-    <View className=" rounded-2xl flex flex-row items-center border border-gray-300 bg-gray-100   px-4 ">
+    <View className=" rounded-2xl flex flex-row items-center border border-gray-300 bg-white   px-4 ">
       <Feather name="search" size={24} color="black" />
       <TextInput
         placeholder="Food, drinks, etc..."

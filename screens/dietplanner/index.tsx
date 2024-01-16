@@ -6,6 +6,7 @@ import {
   Image,
   Pressable,
   useWindowDimensions,
+  TouchableOpacity,
 } from "react-native";
 import React from "react";
 import { Screen, Button } from "../../components";
@@ -16,6 +17,7 @@ import { Feather } from "@expo/vector-icons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import QuizRoutes from "./QuizRoutes";
 import { useState, useMemo } from "react";
+import { useQuizStore } from "../../store/quizStore";
 
 type DietStackParamList = {
   DietHome: undefined;
@@ -91,17 +93,22 @@ function DishPreviewCard({ title, image }: { title: string; image: string }) {
 
 const Circle = ({ onPress }: { onPress: () => void }) => {
   return (
-    <ImageBackground source={circle} className="w-full  h-80 pt-20">
+    <ImageBackground source={circle} className="w-full  h-96 pt-32">
       <View className="flex items-center px-2 space-y-2">
         <Text className="text-center text-4xl tracking-wide text-light font-semibold">
           Find your plan
         </Text>
-        <Text className="text-center text-light text-lg">
+        <Text className="text-center text-light font-medium text-lg">
           Take our quick test to find the perfect diet plan for you.
         </Text>
-        <View className="pt-4">
-          <Button onPress={onPress} title="Get Started" />
-        </View>
+        <TouchableOpacity
+          onPress={onPress}
+          className="py-2 bg-white w-64 rounded-full flex justify-center items-center"
+        >
+          <View>
+            <Text>Get Started</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
@@ -155,10 +162,12 @@ const Tabs = ({
 const DietHomePage = ({ navigation }: { navigation: any }) => {
   return (
     <>
-      <Screen style="relative -mx-4 -mt-12">
+      <Screen style="relative -mx-4 -mt-12 px-2">
         <Circle onPress={() => navigation.navigate("DietQuiz")} />
         <View className="py-10 space-y-6 px-2">
-          <Text className="text-3xl text-dark font-medium">Vegetarian</Text>
+          <Text className="text-3xl text-dark font-medium">
+            Vegetarian Diets
+          </Text>
           <FlatList
             horizontal
             data={menu}
@@ -292,17 +301,17 @@ const DailyDiet = ({ navigation }: { navigation: any }) => {
 
   return (
     <>
-      <Screen style="relative -mx-4 ">
+      <Screen style="relative -mx-2">
         <Tabs activeTab={activeTab} setActiveTab={setactiveTab} />
         {isViewingToday ? (
           <>
-            <View className=" border-b border-gray-300 py-2.5 w-full space-y-2 ">
+            <View className="px-2 border-b border-gray-300 py-2.5 w-full space-y-2 ">
               <Text className="text-center text-lg">Thursday, JUL 27</Text>
               <Text className="text-center text-2xl text-dark font-medium">
                 Day 1 of 7
               </Text>
             </View>
-            <View className="py-10 space-y-2 px-2">
+            <View className="pt-10 pb-28 px-2 space-y-2 ">
               <View className="flex-row justify-between items-center py-2 ">
                 <Text className="text-3xl text-dark font-medium">
                   Breakfast
@@ -326,34 +335,34 @@ const DailyDiet = ({ navigation }: { navigation: any }) => {
                 )}
                 keyExtractor={(item) => item.name}
               />
-              {/* <Text className="text-3xl text-dark font-medium">Lunch</Text>
-          <FlatList
-            horizontal
-            data={menu}
-            renderItem={({ item }) => (
-              <DishPreviewCard
-                image={
-                  "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
-                }
-                title={item.name}
+              <Text className="text-3xl text-dark font-medium">Lunch</Text>
+              <FlatList
+                horizontal
+                data={menu}
+                renderItem={({ item }) => (
+                  <DishPreviewCard
+                    image={
+                      "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
+                    }
+                    title={item.name}
+                  />
+                )}
+                keyExtractor={(item) => item.name}
               />
-            )}
-            keyExtractor={(item) => item.name}
-          />
-          <Text className="text-3xl text-dark font-medium">Dinner</Text>
-          <FlatList
-            horizontal
-            data={menu}
-            renderItem={({ item }) => (
-              <DishPreviewCard
-                image={
-                  "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
-                }
-                title={item.name}
+              <Text className="text-3xl text-dark font-medium">Dinner</Text>
+              <FlatList
+                horizontal
+                data={menu}
+                renderItem={({ item }) => (
+                  <DishPreviewCard
+                    image={
+                      "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
+                    }
+                    title={item.name}
+                  />
+                )}
+                keyExtractor={(item) => item.name}
               />
-            )}
-            keyExtractor={(item) => item.name}
-          /> */}
             </View>
           </>
         ) : (
@@ -365,16 +374,21 @@ const DailyDiet = ({ navigation }: { navigation: any }) => {
 };
 
 export const DietPlanner = ({ navigation }) => {
+  const { plan } = useQuizStore();
   return (
     <>
-      <Stack.Navigator
-        screenOptions={{ headerShown: false }}
-        initialRouteName="DietHome"
-      >
-        <Stack.Screen name="DailyDiet" component={DailyDiet} />
-        <Stack.Screen name="DietHome" component={DietHomePage} />
-        <Stack.Screen name="DietQuiz" component={QuizRoutes} />
-      </Stack.Navigator>
+      {!plan ? (
+        <Stack.Navigator
+          screenOptions={{ headerShown: false }}
+          initialRouteName="DietHome"
+        >
+          <Stack.Screen name="DailyDiet" component={DailyDiet} />
+          <Stack.Screen name="DietHome" component={DietHomePage} />
+          <Stack.Screen name="DietQuiz" component={QuizRoutes} />
+        </Stack.Navigator>
+      ) : (
+        <DailyDiet navigation={navigation} />
+      )}
     </>
   );
 };

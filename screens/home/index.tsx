@@ -8,7 +8,13 @@ import {
   TouchableOpacity,
   ImageSourcePropType,
 } from "react-native";
-import { SearchBar, Screen, Header } from "../../components";
+import {
+  SearchBar,
+  Screen,
+  Header,
+  DishPreviewCard,
+  FoodCategoryGrid,
+} from "../../components";
 import { desserts } from "../../assets";
 import { Feather } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
@@ -25,8 +31,15 @@ import {
   special,
 } from "../../assets";
 import { TcartItem } from "../../contexts/CartContext";
-import { menu } from "../../constants/menu";
+import { menu, salads as saladsCategory, seaFood } from "../../constants/menu";
 import { useCartStore } from "../../store/cartStore";
+import {
+  desserts_emoji,
+  leanmeat_emoji,
+  salads_emoji,
+  seafoods_emoji,
+  soups_emoji,
+} from "../../assets/foodcategories";
 
 // const menu = [
 //   {
@@ -81,36 +94,36 @@ import { useCartStore } from "../../store/cartStore";
 const categories = [
   {
     name: "Desserts",
-    image: desserts,
+    image: desserts_emoji,
   },
   {
     name: "Lean meat",
-    image: leanmeat,
+    image: leanmeat_emoji,
   },
   {
     name: "Salads",
-    image: salads,
+    image: salads_emoji,
+  },
+  {
+    name: "Sea food",
+    image: seafoods_emoji,
   },
   // {
-  //   name: "Diet foods",
-  //   image: desserts,
+  //   name: "Smoothies",
+  //   image: smoothie,
   // },
   {
-    name: "Smoothies",
-    image: smoothie,
-  },
-  {
     name: "Soups",
-    image: soups,
+    image: soups_emoji,
   },
-  {
-    name: "Specials",
-    image: special,
-  },
-  {
-    name: "Parfaits",
-    image: parfait,
-  },
+  // {
+  //   name: "Specials",
+  //   image: special,
+  // },
+  // {
+  //   name: "Parfaits",
+  //   image: parfait,
+  // },
 ];
 
 type RootTabsParamList = {
@@ -121,107 +134,37 @@ type RootTabsParamList = {
 };
 
 function MenuItem({ image, title }: any) {
-  return (
-    <View className=" inline-flex flex-row bg-white shadow shadow-black border border-gray-400  mr-4 px-4 rounded-lg   items-center">
-      {/* <SvgComponent /> */}
-      <Image resizeMode="contain" className="w-20 h-20" source={image} />
-      <Text className="text-sm font-bold text-dark">{title}</Text>
-    </View>
-  );
-}
-
-function AddToCartButton({
-  addToCart,
-  _id,
-  cartItems,
-}: {
-  addToCart: (t: any) => void;
-  _id: string;
-  cartItems: TcartItem[];
-}) {
-  const count = useMemo(() => {
-    const cartItem = cartItems?.find((cartItem: any) => cartItem._id == _id);
-
-    if (cartItem) {
-      return cartItem.quantity;
-    }
-
-    return false;
-  }, [cartItems, _id]);
+  const navigationParams = {
+    activeCategory: title == "Sea food" ? "SeaFoods" : title,
+  };
+  const navigation = useNavigation();
 
   return (
     <TouchableOpacity
-      onPress={addToCart}
-      className=" border px-4 w-32 inline-flex items-center py-2 rounded-3xl border-dark"
+      // @ts-ignore
+      onPress={() => navigation.navigate("FoodMenu", navigationParams)}
+      className=" inline-flex pb-2 bg-white shadow shadow-black border border-gray-400  mr-4 px-4 rounded-lg   items-center"
     >
-      <Text className="text-xs font-medium">
-        {count ? ` (${count}) In Cart` : "Add to cart"}
-      </Text>
+      {/* <SvgComponent /> */}
+      <Image resizeMode="contain" className="w-20 h-20" source={image} />
+      <Text className="text-sm font-bold text-dark">{title}</Text>
     </TouchableOpacity>
   );
 }
-function LikeButton({ setLiked, liked }: any) {
+
+function AllFoodCategories({ categories }: any) {
   return (
-    <Pressable
-      onPress={() => setLiked(!liked)}
-      className="absolute top-2 right-4"
+    <ScrollView
+      contentContainerStyle={{
+        paddingVertical: 20,
+        paddingHorizontal: 5,
+      }}
+      horizontal
     >
-      <Feather name="heart" size={24} color={liked ? "red" : "black"} />
-    </Pressable>
-  );
-}
-
-function DishPreviewCard({
-  title,
-  image,
-  addToCart,
-  _id,
-  cartItems,
-}: {
-  title: string;
-  image: ImageSourcePropType;
-  _id: string;
-  addToCart: (t: any) => void;
-  cartItems: TcartItem[];
-}) {
-  const navigation = useNavigation();
-  const [liked, setLiked] = useState();
-
-  return (
-    <Pressable className="flex-1  mr-6 w-[80vw]">
-      <Pressable
-        onPress={() =>
-          // @ts-ignore
-          navigation.navigate("FoodScreen", {
-            _id: _id,
-            title: title,
-            image: image,
-          })
-        }
-        className="relative"
-      >
-        <Image
-          source={image}
-          className="w-full  h-56 rounded-xl     object-cover"
-        />
-
-        {/* OVERLAY */}
-        <View className="absolute rounded-xl top-0 bottom-0 left-0 right-0 bg-black/20 "></View>
-      </Pressable>
-      {/* LIKEBUTTON */}
-      <LikeButton liked={liked} setLiked={setLiked} />
-      <View className="py-2 flex flex-row items-center justify-between">
-        <View className="flex">
-          <Text className=" font-medium">{title}</Text>
-          <Text className="text-lg">$15.00</Text>
-        </View>
-        <AddToCartButton
-          cartItems={cartItems}
-          _id={_id}
-          addToCart={addToCart}
-        />
-      </View>
-    </Pressable>
+      {categories.map((item, index) => (
+        <MenuItem image={item.image} title={item.name} key={index} />
+      ))}
+    </ScrollView>
   );
 }
 
@@ -232,46 +175,35 @@ const HomeMenu = () => {
   const { addToCart, cartItems } = useCartStore();
 
   return (
-    <Screen style="">
+    <Screen style="pb-20">
       <Header />
       <View className="pt-2">
         <SearchBar />
       </View>
       <View>
-        <ScrollView
-          contentContainerStyle={{
-            paddingVertical: 20,
-            paddingHorizontal: 5,
-          }}
-          horizontal
-        >
-          {categories.map((item, index) => (
-            <MenuItem image={item.image} title={item.name} key={index} />
-          ))}
-        </ScrollView>
+        <AllFoodCategories categories={categories} />
       </View>
-
-      <View className="pt-8">
-        <View className="mb-4 flex justify-between items-center flex-row">
-          <Text className="text-3xl font-medium">Desserts</Text>
-          <Text className="text-sm font-medium">See More</Text>
-        </View>
-        <FlatList
-          horizontal
-          data={menu}
-          renderItem={({ item }) => (
-            <DishPreviewCard
-              cartItems={cartItems}
-              _id={item._id}
-              addToCart={() => addToCart({ ...item, quantity: 1 })}
-              image={item.image}
-              title={item.name}
-            />
-          )}
-          keyExtractor={(item) => item.name}
+      <View className="pb-28">
+        <FoodCategoryGrid
+          category={menu}
+          title="Trending"
+          cartItems={cartItems}
+          addToCart={addToCart}
+        />
+        <FoodCategoryGrid
+          title="Salads"
+          category={saladsCategory}
+          cartItems={cartItems}
+          addToCart={addToCart}
+        />
+        <FoodCategoryGrid
+          title="Sea food"
+          category={seaFood}
+          cartItems={cartItems}
+          addToCart={addToCart}
         />
       </View>
-      <View className="pt-8 pb-28">
+      {/* <View className="pt-8 pb-28">
         <View className="mb-4 flex justify-between items-center flex-row">
           <Text className="text-3xl font-medium">Salads</Text>
           <Text className="text-sm font-medium">See More</Text>
@@ -290,7 +222,7 @@ const HomeMenu = () => {
           )}
           keyExtractor={(item) => item.name}
         />
-      </View>
+      </View> */}
     </Screen>
   );
 };

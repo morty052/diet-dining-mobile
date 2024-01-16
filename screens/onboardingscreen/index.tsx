@@ -1,4 +1,10 @@
-import { View, Pressable, useWindowDimensions, Text } from "react-native";
+import {
+  View,
+  Pressable,
+  useWindowDimensions,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import { useState, useMemo } from "react";
 import LottieView from "lottie-react-native";
 import {
@@ -15,6 +21,7 @@ import Animated, {
   useAnimatedStyle,
   Easing,
 } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type TOnboardingScreenProps = {
   description: string;
@@ -24,6 +31,49 @@ type TOnboardingScreenProps = {
   width: number;
   height: number;
   textColor?: string;
+  activePage: number;
+  setActivePage: any;
+};
+
+const PageCountCircle = ({
+  active,
+  setActive,
+}: {
+  active?: boolean;
+  setActive: () => void;
+}) => {
+  return (
+    <Pressable
+      onPress={() => setActive()}
+      className={`  h-2 w-[30vw] z-10 p-1  mx-1 rounded-full ${
+        active ? " bg-white" : "border bg-gray-600 border-white"
+      }`}
+    ></Pressable>
+  );
+};
+
+const PageCountVisuals = ({
+  activePage,
+  setActivePage,
+}: {
+  activePage: number;
+  setActivePage: any;
+}) => {
+  const onBoardingArray = [1, 2, 3];
+
+  return (
+    <View className=" flex-row items-center space-x-4 mt-2">
+      {onBoardingArray?.map((item, index) => {
+        return (
+          <PageCountCircle
+            setActive={() => setActivePage(index)}
+            active={activePage === index}
+            key={index}
+          />
+        );
+      })}
+    </View>
+  );
 };
 
 const OnboardingControls = ({
@@ -39,39 +89,6 @@ const OnboardingControls = ({
 }) => {
   const navigate = useNavigation();
 
-  const PageCountCircle = ({
-    active,
-    setActive,
-  }: {
-    active?: boolean;
-    setActive: () => void;
-  }) => {
-    return (
-      <Pressable
-        onPress={() => setActive()}
-        className={`  p-2 mx-2 rounded-full ${
-          active ? "h-5 w-5 bg-white" : "border border-white h-4 w-4"
-        }`}
-      ></Pressable>
-    );
-  };
-
-  const PageCountVisuals = () => {
-    return (
-      <View className=" flex-row items-center space-x-4">
-        {onBoardingArray?.map((item, index) => {
-          return (
-            <PageCountCircle
-              setActive={() => setActivePage(index)}
-              active={activePage === index}
-              key={index}
-            />
-          );
-        })}
-      </View>
-    );
-  };
-
   const isLastItem = useMemo(() => {
     if (activePage === onBoardingArray.length - 1) {
       return true;
@@ -80,26 +97,37 @@ const OnboardingControls = ({
   }, [activePage]);
 
   return (
-    <View className="bg-black/30 absolute bottom-0  p-6 px-4 left-0 right-0 ">
-      <View className="flex-row justify-between items-center">
+    <View className="bg-black/30 absolute bottom-0  py-5 px-3 left-0 right-0 ">
+      <View className="flex-row justify-between  items-center">
         <Pressable onPress={() => navigate.navigate("SignUp")}>
           <Text className="text-white">Skip</Text>
         </Pressable>
-        <PageCountVisuals />
-        <Pressable
+
+        <TouchableOpacity
+          className="bg-white px-3 py-3  w-4/5   items-center rounded-full"
           onPress={
             isLastItem ? () => navigate.navigate("App") : () => handleNext()
           }
         >
-          <Text className="text-white">{isLastItem ? "Done" : "Next"}</Text>
-        </Pressable>
+          <Text className="text-dark">{isLastItem ? "Done" : "Next"}</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
 };
 
 export const OnboardingScreenItem = (props: TOnboardingScreenProps) => {
-  const { description, title, lottie, color, width, height, textColor } = props;
+  const {
+    description,
+    title,
+    lottie,
+    color,
+    width,
+    height,
+    textColor,
+    activePage,
+    setActivePage,
+  } = props;
 
   const randomWidth = useSharedValue(10);
 
@@ -114,40 +142,46 @@ export const OnboardingScreenItem = (props: TOnboardingScreenProps) => {
   });
 
   return (
-    <>
+    <SafeAreaView>
       <Animated.View
         style={[
           {
             display: "flex",
             alignItems: "center",
             position: "relative",
-            paddingTop: 100,
             height: "100%",
           },
           style,
         ]}
       >
-        <LottieView
-          style={{ width: width * 0.9, height: width }}
-          autoPlay
-          source={lottie}
+        <PageCountVisuals
+          activePage={activePage}
+          setActivePage={setActivePage}
         />
-        <View className="absolute bottom-32 pb-14 px-4  space-y-2">
+        <View className=" h-1/2 w-full items-center mt-2  pt-28 px-4 ">
+          <LottieView
+            resizeMode="cover"
+            style={{ width: width * 0.9, height: width }}
+            autoPlay
+            source={lottie}
+          />
+        </View>
+        <View className=" h-1/2 pb-48 pl-2  flex  justify-end  space-y-2">
           <Animated.Text
             style={{ color: textColor ? textColor : "white" }}
-            className="text-3xl font-semibold text-white text-center"
+            className="text-3xl font-semibold text-white text-left "
           >
             {title}
           </Animated.Text>
           <Animated.Text
             style={{ color: textColor ? textColor : "white" }}
-            className="text-lg font-semibold text-white text-center"
+            className="text-lg font-semibold text-white "
           >
             {description}
           </Animated.Text>
         </View>
       </Animated.View>
-    </>
+    </SafeAreaView>
   );
 };
 
@@ -156,19 +190,29 @@ export const OnboardingScreen = () => {
   const [color, setColor] = useState("#60A5FA");
   const { width, height } = useWindowDimensions();
 
+  const colors = {
+    0: "#C084FC",
+    1: "#EEE3C8",
+    2: "#80A5FA",
+  };
+
   const onboardingPages = {
     0: (
       <OnboardingScreenItem
+        setActivePage={setonboardingIndex}
+        activePage={onboardingIndex}
         width={width * 0.8}
         height={width}
         lottie={healthyFoodLottie}
-        description="Get set up with a fully tracked diet plan in a few clicks"
+        description="Get set up with a  fully tracked diet plan in a few clicks"
         title="Professional Diet Plans"
         color="#C084FC"
       />
     ),
     1: (
       <OnboardingScreenItem
+        setActivePage={setonboardingIndex}
+        activePage={onboardingIndex}
         width={width}
         height={height}
         lottie={rateFoodLottie}
@@ -180,6 +224,8 @@ export const OnboardingScreen = () => {
     ),
     2: (
       <OnboardingScreenItem
+        setActivePage={setonboardingIndex}
+        activePage={onboardingIndex}
         width={width}
         height={height}
         lottie={saladLottie}
@@ -205,7 +251,11 @@ export const OnboardingScreen = () => {
         onBoardingArray={onBoardingArray}
         handleNext={handleNext}
       />
-      <StatusBar style="light" />
+      <StatusBar
+        animated={true}
+        backgroundColor={colors[onboardingIndex as keyof typeof colors]}
+        style="light"
+      />
     </View>
   );
 };

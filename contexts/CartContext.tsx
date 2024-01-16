@@ -1,5 +1,6 @@
 // @ts-ignore
 import { createContext, ReactNode, useState } from "react";
+import { ImageSourcePropType } from "react-native";
 import Toast from "react-native-root-toast";
 
 export type TcartItem = {
@@ -8,7 +9,7 @@ export type TcartItem = {
   _id: string;
   quantity: number;
   total?: number;
-  image?: string;
+  image?: ImageSourcePropType;
 };
 
 export type TCartContextType = {
