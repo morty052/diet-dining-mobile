@@ -100,16 +100,18 @@ const OnboardingControls = ({
     <View className="bg-black/30 absolute bottom-0  py-5 px-3 left-0 right-0 ">
       <View className="flex-row justify-between  items-center">
         <Pressable onPress={() => navigate.navigate("SignUp")}>
-          <Text className="text-white">Skip</Text>
+          <Text className="text-white font-medium">Skip</Text>
         </Pressable>
 
         <TouchableOpacity
           className="bg-white px-3 py-3  w-4/5   items-center rounded-full"
           onPress={
-            isLastItem ? () => navigate.navigate("App") : () => handleNext()
+            isLastItem ? () => navigate.navigate("SignUp") : () => handleNext()
           }
         >
-          <Text className="text-dark">{isLastItem ? "Done" : "Next"}</Text>
+          <Text className="text-dark text-[16px] font-medium">
+            {isLastItem ? "Done" : "Next"}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

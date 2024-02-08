@@ -10,6 +10,11 @@ import { TcartItem } from "../../contexts/CartContext";
 import { useNavigation } from "@react-navigation/native";
 import React, { useMemo, useState } from "react";
 import { Feather } from "@expo/vector-icons";
+import Animated, {
+  BounceIn,
+  FadeInRight,
+  FadeOutLeft,
+} from "react-native-reanimated";
 
 function AddToCartButton({
   addToCart,
@@ -31,13 +36,26 @@ function AddToCartButton({
   }, [cartItems, _id]);
 
   return (
-    <TouchableOpacity
-      onPress={addToCart}
-      className=" border px-4 w-32 inline-flex items-center py-2 rounded-3xl border-dark"
-    >
-      <Text className="text-xs font-medium">
-        {count ? ` (${count}) In Cart` : "Add to cart"}
-      </Text>
+    <TouchableOpacity onPress={addToCart}>
+      <View
+        className={`border px-4 w-32 inline-flex items-center py-2 rounded-3xl border-dark `}
+      >
+        {!count && (
+          <Animated.Text exiting={FadeOutLeft} className="text-xs font-medium">
+            {count ? ` (${count}) In Cart` : "Add to cart"}
+          </Animated.Text>
+        )}
+        {count && (
+          <Animated.View entering={FadeInRight}>
+            <Animated.Text
+              entering={BounceIn}
+              className={`text-xs font-medium ${count ? "text-white" : ""}}`}
+            >
+              {count ? ` (${count}) In Cart` : "Add to cart"}
+            </Animated.Text>
+          </Animated.View>
+        )}
+      </View>
     </TouchableOpacity>
   );
 }

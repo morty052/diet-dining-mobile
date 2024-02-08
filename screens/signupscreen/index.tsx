@@ -5,6 +5,7 @@ import {
   Image,
   Keyboard,
   ImageBackground,
+  Pressable,
 } from "react-native";
 import React from "react";
 import { Button } from "../../components";
@@ -12,11 +13,11 @@ import { googleLogo } from "../../assets";
 import { useNavigation } from "@react-navigation/native";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Feather } from "@expo/vector-icons";
-import { KeyboardAvoidingView } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Animated, { SlideInDown } from "react-native-reanimated";
 import Foodbg from "../../assets/foodbg.png";
 import emailImage from "../../assets/emailimage.png";
+import { StatusBar } from "expo-status-bar";
 
 const Stack = createNativeStackNavigator();
 
@@ -79,14 +80,14 @@ const SignUpForm = ({
         </View>
 
         {/* TERMS */}
-        <View className=" mt-3">
+        <Pressable onPress={() => navigation.navigate("App")} className=" mt-3">
           <Text className="text-center text-sm text-gray-500">
             By continuing, you agree to our Terms of Service
           </Text>
           <Text className="text-center text-sm text-gray-500">
             Privacy Policy and cookie policy
           </Text>
-        </View>
+        </Pressable>
       </Animated.View>
     </Animated.View>
   );
@@ -107,7 +108,7 @@ const Header = (props: Props) => {
 };
 
 const MainSignUpScreen = () => {
-  const [emailAddress, setEmailAddress] = React.useState("");
+  const [email, setEmail] = React.useState("");
 
   const { isLoaded, signUp, setActive } = useSignUp();
 
@@ -119,6 +120,7 @@ const MainSignUpScreen = () => {
     }
 
     try {
+      const emailAddress = email.trim();
       await signUp.create({
         emailAddress,
       });
@@ -144,9 +146,10 @@ const MainSignUpScreen = () => {
       <View className="absolute bottom-0 top-0 left-0 right-0 bg-black/40"></View>
       <SignUpForm
         handlePress={onSignUpPress}
-        emailAddress={emailAddress}
-        setEmailAddress={setEmailAddress}
+        emailAddress={email}
+        setEmailAddress={setEmail}
       />
+      <StatusBar hidden={true} />
     </ImageBackground>
   );
 };
@@ -269,6 +272,7 @@ const EmailVerificationScreen = () => {
       navigation.navigate("App");
     } catch (err: any) {
       console.error(JSON.stringify(err, null, 2));
+      setCode("");
     }
   };
   return (

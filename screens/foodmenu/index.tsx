@@ -5,32 +5,20 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { FoodCategoryGrid, FoodItemGrid, Screen } from "../../components";
 import { SearchBar } from "../../components";
 import { Feather } from "@expo/vector-icons";
 import { salads, menu, seaFood } from "../../constants/menu";
 import { useCartStore } from "../../store/cartStore";
 import { useNavigation } from "@react-navigation/native";
-import {
-  desserts,
-  leanmeat,
-  parfait,
-  smoothie,
-  soups,
-  special,
-} from "../../assets";
+import { desserts, leanmeat, smoothie, soups } from "../../assets";
 
 const categories = [
   {
-    name: "Desserts",
+    name: "All",
     image: desserts,
-    category: "Desserts",
-  },
-  {
-    name: "Lean meat",
-    image: leanmeat,
-    category: "Lean meat",
+    category: "All",
   },
   {
     name: "Salads",
@@ -43,11 +31,34 @@ const categories = [
     category: "SeaFoods",
   },
   {
+    name: "Trending",
+    image: soups,
+    category: "Soups",
+  },
+  {
+    name: "Desserts",
+    image: desserts,
+    category: "Desserts",
+  },
+  // {
+  //   name: "Lean meat",
+  //   image: leanmeat,
+  //   category: "Lean meat",
+  // },
+  {
     name: "Soups",
     image: soups,
     category: "Soups",
   },
 ];
+
+const descriptions = {
+  Salads: "Experience the healthiest and tastiest salads from diet dining",
+  SeaFoods: "Delight your taste buds with our vast Sea food collection.",
+  All: "Explore our constantly updating menu of healthy and delicious dishes.",
+  Trending:
+    "Discover our weekly list of the most popluar dishes from our menu.",
+};
 
 const FoodMenuHeader = ({ title }: { title?: string }) => {
   const navigate = useNavigation();
@@ -118,8 +129,33 @@ const CategorySelectorGrid = ({
   );
 };
 
+const CategoryDescriptionCard = ({
+  description,
+  activeCategory,
+}: {
+  description: string;
+  activeCategory: string;
+}) => {
+  return (
+    <View className="mt-6 rounded-lg p-4 bg-primary  border border-dark/50">
+      <View>
+        {activeCategory ? (
+          <Text className="text-3xl text-white font-medium">
+            {activeCategory == "SeaFoods" ? "Sea Foods" : activeCategory}
+          </Text>
+        ) : (
+          <Text className="text-3xl text-white font-medium">All</Text>
+        )}
+        <Text className=" text-[16px] text-white font-medium">
+          {description ? description : descriptions.All}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
 export function FoodMenu({ navigation, route }: any) {
-  const { activeCategory } = route.params ?? {};
+  const activeCategory = route.params?.activeCategory;
 
   function handleSetCategory(activeCategory: string) {
     navigation.setParams({
@@ -129,27 +165,36 @@ export function FoodMenu({ navigation, route }: any) {
 
   const { addToCart, cartItems } = useCartStore();
 
-  const categories = {
+  const Allcategories = {
     Salads: salads,
     SeaFoods: seaFood,
     Menu: menu,
+    All: salads,
+    Trending: salads,
+    Desserts: salads,
+    Leanmeat: salads,
+    Soups: salads,
   };
 
+  // useEffect(() => {
+  //   if (!activeCategory) {
+  //     navigation.setParams({
+  //       activeCategory: "All",
+  //     });
+  //   }
+  // }, [activeCategory]);
+
   return (
-    <SafeAreaView className="px-2 pt-2 pb-60 flex-1 bg-gray-200">
+    <SafeAreaView className="px-2 pt-2 pb-80 flex-1 bg-gray-200">
       <FoodMenuHeader title={activeCategory} />
       <View className="pb-4">
         <SearchBar />
-        <View className="mt-6 rounded-lg p-4 bg-primary  border border-dark/50">
-          <View>
-            <Text className="text-3xl text-white font-medium">
-              {activeCategory == "SeaFoods" ? "Sea Foods" : activeCategory}
-            </Text>
-            <Text className=" text-[16px] text-white font-medium">
-              Experience the healthiest and tastiest salads from diet dining
-            </Text>
-          </View>
-        </View>
+        <CategoryDescriptionCard
+          activeCategory={activeCategory}
+          description={
+            descriptions[activeCategory as keyof typeof descriptions]
+          }
+        />
         <CategorySelectorGrid
           handleSetCategory={(activeCategory) =>
             handleSetCategory(activeCategory)
@@ -161,7 +206,11 @@ export function FoodMenu({ navigation, route }: any) {
         cartItems={cartItems}
         title={activeCategory == "SeaFoods" ? "Sea Foods" : activeCategory}
         addToCart={addToCart}
-        category={categories[activeCategory as keyof typeof categories]}
+        category={
+          !activeCategory
+            ? Allcategories.Salads
+            : Allcategories[activeCategory as keyof typeof Allcategories]
+        }
       />
     </SafeAreaView>
   );

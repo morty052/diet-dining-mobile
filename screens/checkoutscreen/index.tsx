@@ -7,7 +7,7 @@ import {
   Image,
   useWindowDimensions,
 } from "react-native";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Screen } from "../../components";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -16,6 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import checkOutimage from "../../assets/ordercomplete.png";
 import paperPlane from "../../assets/lottie/paperplane.json";
+import fryingPan from "../../assets/lottie/fryingpan.json";
 import LottieView from "lottie-react-native";
 
 const BackButtonheader = () => {
@@ -75,7 +76,7 @@ const PriorityBox = ({ title }: { title: string }) => {
   );
 };
 
-function CheckOutCompleteScreen(params: type) {
+function CheckOutCompleteScreen() {
   const BackButtonheader = () => {
     const navigation = useNavigation();
     return (
@@ -123,15 +124,56 @@ function CheckOutCompleteScreen(params: type) {
   );
 }
 
+function CheckoutLoading() {
+  return (
+    <>
+      <SafeAreaView className="bg-white flex-1 h-screen relative">
+        <View className="pt-20 pb-8 px-4">
+          <Text className="text-3xl text-center font-bold text-dark">
+            Getting your order ready
+          </Text>
+          <Text className="text-xl text-center font-medium text-dark">
+            Give us a second while we prepare your order
+          </Text>
+        </View>
+        <LottieView
+          loop
+          autoPlay
+          source={fryingPan}
+          style={{ height: 300, width: 300, alignSelf: "center" }}
+        />
+        {/* <View className="absolute w-full bottom-0 -right-10">
+          <Image
+            resizeMode="cover"
+            className="w-full h-96"
+            source={checkOutimage}
+          />
+        </View> */}
+      </SafeAreaView>
+      <StatusBar style="dark" backgroundColor="#fff" />
+    </>
+  );
+}
+
 export function CheckoutScreen() {
   const { cartItems } = useCartStore();
   const [checkoutComplete, setcheckoutComplete] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (loading) {
+      setTimeout(() => {
+        setLoading(false);
+        setcheckoutComplete(true);
+      }, 8000);
+    }
+  }, [loading]);
 
   const navigation = useNavigation();
 
   return (
     <>
-      {!checkoutComplete ? (
+      {/* {!checkoutComplete ? (
         <SafeAreaView className="flex-1 bg-gray-200">
           <BackButtonheader />
           <ScrollView className="pt-6 relative h-screen px-3">
@@ -210,7 +252,91 @@ export function CheckoutScreen() {
         </SafeAreaView>
       ) : (
         <CheckOutCompleteScreen />
+      )} */}
+      {!checkoutComplete && !loading && (
+        <SafeAreaView className="flex-1 bg-gray-200">
+          <BackButtonheader />
+          <ScrollView className="pt-6 relative h-screen px-3">
+            <View className="pb-48">
+              <View className="flex-row mb-6 items-center w-full ">
+                <Feather name="map-pin" size={24} color="#1F2937" />
+                <View className="flex-1 flex-row items-center justify-between border-b border-gray-400 pb-3 ml-4">
+                  <View>
+                    <Text className=" text-[17px] font-medium text-dark">
+                      200 West 74th st
+                    </Text>
+                    <Text className=" font-medium text-dark">Vancouver CA</Text>
+                  </View>
+                  <Feather name="chevron-right" size={24} color="#9CA3AF" />
+                </View>
+              </View>
+
+              <View className="flex-row items-center w-full ">
+                <Feather name="user" size={24} color="#1F2937" />
+                <View className="flex-1 flex-row items-center justify-between border-b border-gray-400 pb-3 ml-4">
+                  <View>
+                    <Text className=" text-[17px] font-medium text-dark">
+                      Meet at door
+                    </Text>
+                    <Text className=" font-medium text-dark">
+                      Add delivery note
+                    </Text>
+                  </View>
+                  <Feather name="chevron-right" size={24} color="#9CA3AF" />
+                </View>
+              </View>
+              <View className="flex-row justify-between pt-5 pb-3">
+                <Text className="text-lg font-medium text-dark">
+                  Delivery Time
+                </Text>
+                <Text className="text-lg font-medium text-dark">10-20 Min</Text>
+              </View>
+              <PriorityBox title="Priority" />
+              <PriorityBox title="Standard" />
+              <PriorityBox title="Schedule" />
+              <View className="pt-6">
+                <View className="flex-row justify-between">
+                  <Text className="text-lg font-medium text-dark">
+                    Your Items
+                  </Text>
+                  <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
+                    <Text className="text-lg font-medium text-blue-500">
+                      View Cart
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <View className="mt-4">
+                  {cartItems.map((item) => (
+                    <View
+                      className="flex-row justify-between items-center border-b border-gray-400 pb-2"
+                      key={item._id}
+                    >
+                      <View className="flex-row space-x-4 py-4">
+                        <Text className="font-medium text-dark">
+                          {item.quantity}
+                        </Text>
+                        <Text className="font-medium text-dark">
+                          {item.name}
+                        </Text>
+                      </View>
+                      <Text className="font-medium text-dark">
+                        ${item.total}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+          <CheckoutButton
+            handleCheckout={() => {
+              setLoading(true);
+            }}
+          />
+        </SafeAreaView>
       )}
+      {checkoutComplete && <CheckOutCompleteScreen />}
+      {loading && <CheckoutLoading />}
     </>
   );
 }

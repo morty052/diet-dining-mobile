@@ -18,6 +18,16 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import QuizRoutes from "./QuizRoutes";
 import { useState, useMemo } from "react";
 import { useQuizStore } from "../../store/quizStore";
+import { salads, seaFood } from "../../constants/menu";
+import { useNavigation } from "@react-navigation/native";
+import {
+  ceaser_salad,
+  chicken_salad,
+  friedrice_prawns_meal,
+  meat_potato_meal,
+  vegetable_salad,
+} from "../../assets/dishes";
+import { parfait } from "../../assets";
 
 type DietStackParamList = {
   DietHome: undefined;
@@ -65,12 +75,31 @@ const menu = [
   },
 ];
 
-function DishPreviewCard({ title, image }: { title: string; image: string }) {
+function DishPreviewCard({
+  title,
+  image,
+  _id,
+}: {
+  title: string;
+  image: any;
+  _id: string;
+}) {
+  const navigation = useNavigation();
   return (
-    <View className="flex-1  mr-4 w-[90vw]">
+    <Pressable
+      onPress={() =>
+        // @ts-ignore
+        navigation.navigate("FoodScreen", {
+          _id: _id,
+          title: title,
+          image: image,
+        })
+      }
+      className="flex-1  mr-4 w-[90vw]"
+    >
       <View className="relative">
         <Image
-          source={{ uri: image }}
+          source={image}
           className="w-full  h-56 rounded-xl     object-cover"
         />
         <View className="absolute top-2 right-4">
@@ -87,7 +116,7 @@ function DishPreviewCard({ title, image }: { title: string; image: string }) {
           <Text className="text-sm font-medium">Order</Text>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -202,7 +231,7 @@ const DietHomePage = ({ navigation }: { navigation: any }) => {
   );
 };
 
-const Planner = () => {
+const Planner = ({ today }: { today: string }) => {
   const { width, height } = useWindowDimensions();
 
   const half = height / 2.5;
@@ -251,17 +280,23 @@ const Planner = () => {
         <Feather name="chevron-left" size={20} />
         <View className="flex-1 flex-row justify-center  items-center space-x-2">
           <Feather name="calendar" size={20} />
-          <Text className="text-lg">Today, JUL 27</Text>
+          <Text className="text-lg">{today}</Text>
         </View>
         <Feather name="chevron-right" size={20} />
       </View>
     );
   };
 
-  const RecommendedMealCard = ({ time }: { time: string }) => {
+  const RecommendedMealCard = ({
+    time,
+    image,
+  }: {
+    time: string;
+    image: any;
+  }) => {
     return (
       <View className="bg-white my-2 border p-4 flex-row justify-between items-center rounded-lg">
-        <Image className=" h-16 w-16" source={desserts} />
+        <Image resizeMode="contain" className=" h-16 w-16" source={image} />
         <View className="flex-1 px-4">
           <Text className="text-xl font-medium test-dark">{time}</Text>
           <Text>recommended: 635-889 kcal</Text>
@@ -274,9 +309,9 @@ const Planner = () => {
   const RecommendedMealsGrid = () => {
     return (
       <View className="p-4 ">
-        <RecommendedMealCard time="Breakfast" />
-        <RecommendedMealCard time="Lunch" />
-        <RecommendedMealCard time="Dinner" />
+        <RecommendedMealCard image={ceaser_salad} time="Breakfast" />
+        <RecommendedMealCard image={parfait} time="Lunch" />
+        <RecommendedMealCard image={chicken_salad} time="Dinner" />
       </View>
     );
   };
@@ -293,6 +328,16 @@ const Planner = () => {
 const DailyDiet = ({ navigation }: { navigation: any }) => {
   const [activeTab, setactiveTab] = useState<"TODAY" | "TRACKER">("TODAY");
 
+  const todayRaw = new Date();
+
+  const today = useMemo(() => {
+    return todayRaw.toLocaleDateString("en-CA", {
+      weekday: "long",
+      day: "numeric",
+      month: "short",
+    });
+  }, [todayRaw]);
+
   const isViewingToday = useMemo(() => {
     if (activeTab == "TODAY") {
       return true;
@@ -306,7 +351,7 @@ const DailyDiet = ({ navigation }: { navigation: any }) => {
         {isViewingToday ? (
           <>
             <View className="px-2 border-b border-gray-300 py-2.5 w-full space-y-2 ">
-              <Text className="text-center text-lg">Thursday, JUL 27</Text>
+              <Text className="text-center text-lg">{today}</Text>
               <Text className="text-center text-2xl text-dark font-medium">
                 Day 1 of 7
               </Text>
@@ -324,12 +369,11 @@ const DailyDiet = ({ navigation }: { navigation: any }) => {
               </View>
               <FlatList
                 horizontal
-                data={menu}
+                data={salads}
                 renderItem={({ item }) => (
                   <DishPreviewCard
-                    image={
-                      "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
-                    }
+                    _id={item._id}
+                    image={item.image}
                     title={item.name}
                   />
                 )}
@@ -338,12 +382,11 @@ const DailyDiet = ({ navigation }: { navigation: any }) => {
               <Text className="text-3xl text-dark font-medium">Lunch</Text>
               <FlatList
                 horizontal
-                data={menu}
+                data={seaFood}
                 renderItem={({ item }) => (
                   <DishPreviewCard
-                    image={
-                      "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
-                    }
+                    _id={item._id}
+                    image={item.image}
                     title={item.name}
                   />
                 )}
@@ -352,12 +395,11 @@ const DailyDiet = ({ navigation }: { navigation: any }) => {
               <Text className="text-3xl text-dark font-medium">Dinner</Text>
               <FlatList
                 horizontal
-                data={menu}
+                data={salads}
                 renderItem={({ item }) => (
                   <DishPreviewCard
-                    image={
-                      "https://img.freepik.com/free-photo/trifle-dessert-with-berries-cream-isolated-white-background-ai-generative_123827-24185.jpg?size=626&ext=jpg&ga=GA1.2.1014310989.1704930583&semt=ais"
-                    }
+                    _id={item._id}
+                    image={item.image}
                     title={item.name}
                   />
                 )}
@@ -366,7 +408,7 @@ const DailyDiet = ({ navigation }: { navigation: any }) => {
             </View>
           </>
         ) : (
-          <Planner />
+          <Planner today={today} />
         )}
       </Screen>
     </>

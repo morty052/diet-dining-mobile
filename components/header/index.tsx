@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React, { useMemo } from "react";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -27,21 +27,24 @@ export const Header = (props: Props) => {
       <View className="flex flex-row gap-x-4">
         <FontAwesome
           // @ts-ignore
-          onPress={() => navigation.navigate("LocationScreen")}
+          // onPress={() => navigation.navigate("LocationScreen")}
           name="map-marker"
           size={24}
           color="black"
         />
-        <View className="relative">
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Cart")}
+          className="relative"
+        >
           <Feather
             // @ts-ignore
-            onPress={() => navigation.navigate("Cart")}
+
             name="shopping-cart"
             size={24}
             color="black"
           />
           <Badge count={itemsCount} />
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

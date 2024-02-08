@@ -97,16 +97,16 @@ const categories = [
     image: desserts_emoji,
   },
   {
-    name: "Lean meat",
-    image: leanmeat_emoji,
+    name: "Sea food",
+    image: seafoods_emoji,
   },
   {
     name: "Salads",
     image: salads_emoji,
   },
   {
-    name: "Sea food",
-    image: seafoods_emoji,
+    name: "Lean meat",
+    image: leanmeat_emoji,
   },
   // {
   //   name: "Smoothies",

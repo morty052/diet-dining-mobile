@@ -250,7 +250,7 @@ const DietBudget = ({ navigation }: { navigation: any }) => {
     }
     const timer = setTimeout(() => {
       setGettingDietPlan(false);
-      setPlan(selected);
+      setPlan("diet");
     }, 8000);
 
     // return () => {
